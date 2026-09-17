@@ -1,0 +1,32 @@
+[
+  {
+    "description": "Uplink and Core DNS",
+    "ip": "10.0.0.1",
+    "name": "Edge Gateway",
+    "subnet": "10.0.0.0/16"
+  },
+  {
+    "description": "User Workstations Subnet",
+    "ip": "10.0.10.1",
+    "name": "Workstations Gateway",
+    "subnet": "10.0.10.0/24"
+  },
+  {
+    "description": "Enterprise Core Services",
+    "ip": "10.0.20.1",
+    "name": "Core Servers Gateway",
+    "subnet": "10.0.20.0/24"
+  },
+  {
+    "description": "Single-network routing node",
+    "ip": "10.0.40.1",
+    "name": "Gateway Node 4",
+    "subnet": "10.0.40.0/24"
+  },
+  {
+    "description": "Single-network routing node",
+    "ip": "10.0.50.1",
+    "name": "Gateway Node 5",
+    "subnet": "10.0.50.0/24"
+  }
+]

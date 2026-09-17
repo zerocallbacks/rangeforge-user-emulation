@@ -1,0 +1,46 @@
+[
+  {
+    "id": "RANGE-01",
+    "badge": "CR",
+    "name": "Cyber Range",
+    "state": "stopped",
+    "endpoints_online": 0,
+    "endpoints_total": 0,
+    "intensity": "High (2.5x)",
+    "avg_cpu": 0,
+    "avg_ram": 0,
+    "actions_min": 0,
+    "failures": 0,
+    "controller_online": true,
+    "primary_cidr": "10.0.0.0/16",
+    "active": true,
+    "gateway_ip": "10.0.0.1",
+    "dns_server": "10.0.0.2",
+    "domain_controller": "10.0.1.10",
+    "search_domain": "range.local",
+    "operating_mode": "Autonomous Emulation",
+    "subnets": [
+      {
+        "id": "sub-1",
+        "name": "Workstations",
+        "cidr": "10.0.10.0/24",
+        "gateway": "10.0.10.1",
+        "purpose": "User workstations and endpoint nodes"
+      },
+      {
+        "id": "sub-2",
+        "name": "Core Servers",
+        "cidr": "10.0.20.0/24",
+        "gateway": "10.0.20.1",
+        "purpose": "Internal file servers, directory services, and intranet"
+      }
+    ],
+    "egress_policy": "Simulated Internet Proxy Egress",
+    "dwell_time_min_sec": 6,
+    "dwell_time_max_sec": 28,
+    "web_req_min_per_min": 5,
+    "web_req_max_per_min": 18,
+    "jitter_pct": 30,
+    "latency_ms": 18
+  }
+]

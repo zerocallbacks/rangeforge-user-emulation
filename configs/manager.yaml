@@ -1,0 +1,24 @@
+# ==============================================================================
+# RangeForge User Emulation Suite - Manager Configuration
+# Open-Source Cyber Range Platform
+# ==============================================================================
+
+# Manager listening host and port (HTTPS only)
+listen_host: "0.0.0.0"
+listen_port: 8443
+tls_enabled: true
+tls_cert_path: "./certs/server.crt"
+tls_key_path: "./certs/server.key"
+
+# Agent heartbeat timeout before marking agent as offline (seconds)
+heartbeat_timeout_sec: 30
+
+# Default persona profile automatically assigned to newly registering agents
+default_persona: "office_worker"
+
+# Directory where persona YAML profiles are loaded from
+profiles_dir: "./configs/profiles"
+
+# Security constraint: Manager is strictly designed to run on Unix platforms.
+# Set to true only in isolated evaluation environments.
+allow_unsupported_os: false

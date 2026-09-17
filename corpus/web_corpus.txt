@@ -1,0 +1,6 @@
+https://portal.range.local
+https://wiki.corp.local
+https://jira.corp.local
+https://en.wikipedia.org
+https://news.ycombinator.com
+https://github.com

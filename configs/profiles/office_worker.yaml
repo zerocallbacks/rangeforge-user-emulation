@@ -1,0 +1,37 @@
+name: office_worker
+description: 'Auto-tuned by Posture Preset: stealth'
+web_browsing:
+    enabled: true
+    requests_per_minute_min: 2
+    requests_per_minute_max: 6
+    dwell_time_min_sec: 15
+    dwell_time_max_sec: 45
+    fetch_assets: true
+    user_agents: []
+    target_urls:
+        - https://intranet.corp.local
+        - http://portal.range.local
+    search_keywords: []
+file_share:
+    enabled: true
+    interval_sec: 15
+    shares: []
+    read_ratio: 0.95
+    write_ratio: 0.05
+ping:
+    enabled: true
+    interval_sec: 12
+    targets:
+        - 127.0.0.1
+        - 1.1.1.1
+        - 8.8.8.8
+host_activity:
+    enabled: true
+    interval_sec: 15
+    safe_processes:
+        - whoami
+        - hostname
+        - netstat
+        - ipconfig
+    simulate_office_docs: true
+    temp_file_operations: true

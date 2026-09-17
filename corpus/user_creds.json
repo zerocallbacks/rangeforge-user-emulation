@@ -1,0 +1,47 @@
+[
+  {
+    "username": "jdoe",
+    "password": "Password123!",
+    "domain": "RANGE",
+    "role": "Chief Executive Officer",
+    "persona": "executive",
+    "assigned_host": "Desktop-02",
+    "status": "Active"
+  },
+  {
+    "username": "asmith",
+    "password": "Spring2026Secure!",
+    "domain": "RANGE",
+    "role": "Finance",
+    "persona": "office_worker",
+    "assigned_host": "auto",
+    "status": "Active"
+  },
+  {
+    "username": "bjones",
+    "password": "WinterCyber2026!",
+    "domain": "RANGE",
+    "role": "Developer",
+    "persona": "developer",
+    "assigned_host": "auto",
+    "status": "Active"
+  },
+  {
+    "username": "administrator",
+    "password": "RangeAdmin2026#",
+    "domain": "RANGE",
+    "role": "SysAdmin",
+    "persona": "sysadmin",
+    "assigned_host": "auto",
+    "status": "Active"
+  },
+  {
+    "username": "guest",
+    "password": "Welcome2026!",
+    "domain": "RANGE",
+    "role": "Auditor",
+    "persona": "office_worker",
+    "assigned_host": "auto",
+    "status": "Active"
+  }
+]

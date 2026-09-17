@@ -1,0 +1,31 @@
+# ==============================================================================
+# RangeForge User Emulation Suite - Unix / pfSense Agent Configuration
+# Open-Source Cyber Range Platform
+# ==============================================================================
+
+# Manager central server address (HTTPS only)
+manager_url: "https://10.0.0.1:8443"
+
+# Heartbeat interval in seconds
+heartbeat_sec: 5
+
+# Local network interface to bind (leave empty to auto-detect primary interface)
+bind_interface: ""
+
+# Initial user emulation profile
+persona: "developer"
+
+# Corpus paths (optional; builtin realistic corpus will be used if omitted)
+web_corpus_file: "./corpus/web_corpus.json"
+creds_file: "./corpus/user_creds.json"
+
+# Emulation engine switches
+enable_web: true
+enable_shares: true
+enable_host_activity: true
+
+# Tags
+tags:
+  - "linux-server"
+  - "dev-vlan"
+  - "cyber-training-range"

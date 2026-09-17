@@ -1,0 +1,57 @@
+# ==============================================================================
+# RangeForge User Emulation Suite - .gitignore
+# Open-Source Cyber Range Platform
+# ==============================================================================
+
+# Binaries & Compiled Executables
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/rangeforge-ue
+/rangeforge-ue-*
+
+# TLS Certificates & Private Keys (Auto-generated on startup by pkg/tlsutil)
+certs/*.crt
+certs/*.key
+certs/*.pem
+*.pfx
+!certs/.gitkeep
+!certs/README.md
+
+# Sensitive Credentials & Runtime State
+configs/admin_auth.json
+
+# Test Artifacts & Code Coverage
+*.test
+*.out
+coverage.html
+profile.out
+*.pprof
+
+# Logs & Runtime State
+*.log
+logs/
+tmp/
+temp/
+
+# OS Metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Configurations
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace

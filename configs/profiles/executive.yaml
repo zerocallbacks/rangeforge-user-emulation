@@ -1,0 +1,38 @@
+name: executive
+description: 'Executive & Management Emulation Persona'
+web_browsing:
+    enabled: true
+    requests_per_minute_min: 3
+    requests_per_minute_max: 8
+    dwell_time_min_sec: 10
+    dwell_time_max_sec: 35
+    fetch_assets: true
+    user_agents: []
+    target_urls:
+        - https://intranet.corp.local/executive
+        - https://docs.corp.local/strategy
+        - https://finance.corp.local/summary
+    search_keywords:
+        - quarterly budget
+        - board briefing
+file_share:
+    enabled: true
+    interval_sec: 20
+    shares: []
+    read_ratio: 0.98
+    write_ratio: 0.02
+ping:
+    enabled: true
+    interval_sec: 15
+    targets:
+        - 127.0.0.1
+        - 1.1.1.1
+host_activity:
+    enabled: true
+    interval_sec: 25
+    safe_processes:
+        - whoami
+        - hostname
+        - systeminfo
+    simulate_office_docs: true
+    temp_file_operations: true
