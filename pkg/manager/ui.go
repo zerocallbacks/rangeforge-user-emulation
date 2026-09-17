@@ -2873,6 +2873,7 @@ confidential"></textarea>
     let sessionStartTime = null;
     let sessionRunning = false;
     let cumulativeActions = 0;
+    let currentOperationalState = 'standby';
 
     // Toast notification
     function showToast(msg) {
@@ -3842,6 +3843,7 @@ confidential"></textarea>
 
         // Synchronize Operations Deck Session Ticker
         const curRangeState = (r.state || '').toLowerCase();
+        currentOperationalState = curRangeState;
         if (curRangeState === 'running') {
           sessionRunning = true;
           if (!sessionStartTime) sessionStartTime = Date.now();
@@ -3899,6 +3901,7 @@ confidential"></textarea>
       if (deckBadge) setBadgeState(deckBadge, state);
 
       const reqState = (state || '').toLowerCase();
+      currentOperationalState = reqState;
       if (reqState === 'running') {
         sessionRunning = true;
         if (!sessionStartTime) sessionStartTime = Date.now();

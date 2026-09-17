@@ -533,19 +533,32 @@ func (s *Server) handleControllerCommand(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if strings.EqualFold(cmdReq.TargetAgentID, "ALL") {
+	targetUpper := strings.ToUpper(cmdReq.TargetAgentID)
+	if targetUpper == "ALL" || targetUpper == "ALL_WINDOWS" || targetUpper == "ALL_LINUX" {
 		agents := s.registry.GetAllAgents()
 		var targets []string
 		for _, a := range agents {
 			if a.Status == models.AgentStatusOnline {
-				targets = append(targets, a.ID)
+				if targetUpper == "ALL_WINDOWS" {
+					osLower := strings.ToLower(a.OS + " " + a.Platform)
+					if strings.Contains(osLower, "win") {
+						targets = append(targets, a.ID)
+					}
+				} else if targetUpper == "ALL_LINUX" {
+					osLower := strings.ToLower(a.OS + " " + a.Platform)
+					if strings.Contains(osLower, "linux") || strings.Contains(osLower, "ubuntu") || strings.Contains(osLower, "debian") || strings.Contains(osLower, "centos") || strings.Contains(osLower, "alpine") {
+						targets = append(targets, a.ID)
+					}
+				} else {
+					targets = append(targets, a.ID)
+				}
 			}
 		}
 		if len(targets) == 0 {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"status":  "queued",
-				"message": "No online agents found for target ALL",
+				"message": fmt.Sprintf("No online agents found for target %s", cmdReq.TargetAgentID),
 				"targets": []string{},
 			})
 			return
