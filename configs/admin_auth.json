@@ -1,4 +1,5 @@
 {
+  "_comment_syntax": "Authentication credentials for RangeForge Manager Web UI and REST API. Generated via SHA-256(salt + ':' + password). Default: admin / rangeforge. Modify via UI modal or edit directly.",
   "username": "admin",
   "password_hash": "d8af6cb3782ae42b4e4ae03b19ac5776809b29fbd0a3316ea0d75399b24d7e16",
   "salt": "ebad3cddb04d1052ab0e66937c9c6031",

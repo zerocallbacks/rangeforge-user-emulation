@@ -1374,25 +1374,6 @@ func TestDashboardServingAndStaticAssets(t *testing.T) {
 			t.Errorf("Expected C2 main viewport container in /dashboard")
 		}
 	})
-
-	// Case 3: GET `/assets/brand-icon.png` static asset delivery
-	t.Run("GetBrandIconAsset", func(t *testing.T) {
-		resp, err := http.Get(ts.URL + "/assets/brand-icon.png")
-		if err != nil {
-			t.Fatalf("GET brand icon failed: %v", err)
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNotFound {
-			t.Errorf("Unexpected status code: %d", resp.StatusCode)
-		}
-		if resp.StatusCode == http.StatusOK {
-			ct := resp.Header.Get("Content-Type")
-			if ct != "image/png" {
-				t.Errorf("Expected Content-Type image/png, got: %s", ct)
-			}
-		}
-	})
 }
 
 func TestRangeOperationsPersistenceAndEnrichment(t *testing.T) {

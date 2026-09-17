@@ -11,7 +11,6 @@ const DashboardHTML = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RANGEFORGE // COMMAND CENTER</title>
-  <link rel="icon" type="image/png" href="/assets/brand-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1379,9 +1378,8 @@ const DashboardHTML = `<!DOCTYPE html>
 
     <!-- LEFT NAVIGATION SIDEBAR -->
     <aside class="app-sidebar" id="appSidebar">
-      <!-- Brand Box with Hexagonal Crest Logo -->
+      <!-- Brand Box -->
       <div class="sidebar-brand-box">
-        <img src="/assets/brand-icon.png" class="rf-brand-logo-img" alt="RangeForge Logo">
         <div class="brand-titles-wrap">
           <div class="brand-title">RANGEFORGE <span class="brand-pill">UE</span></div>
           <div class="brand-subtitle">User Emulation Platform</div>

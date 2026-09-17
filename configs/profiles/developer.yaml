@@ -1,35 +1,129 @@
+# ==============================================================================
+# RangeForge User Emulation Suite - Persona Profile: Developer
+# ==============================================================================
+# Represents a software engineer or DevOps practitioner.
+# Characterized by high browsing cadence across technical documentation, code
+# repositories, and forums; frequent code-share reads and writes; and benign
+# background developer utilities (git, compiler checks, whoami).
+#
+# Format: Standard YAML.
+# ==============================================================================
+
+# name: Unique persona identifier matching the filename (without .yaml).
 name: developer
-description: Software Developer Persona
+
+# description: Human-readable purpose of this profile in the cyber range scenario.
+description: "Software engineering persona with high technical web traffic and code repository access"
+
+# ------------------------------------------------------------------------------
+# Web Browsing Emulation Settings
+# ------------------------------------------------------------------------------
 web_browsing:
-    enabled: true
-    requests_per_minute_min: 6
-    requests_per_minute_max: 20
-    dwell_time_min_sec: 4
-    dwell_time_max_sec: 16
-    fetch_assets: true
-    user_agents: []
-    target_urls:
-        - https://github.com/trending
-        - https://stackoverflow.com/questions
-    search_keywords:
-        - go concurrency
-        - docker multistage
+  # enabled: Master switch for web traffic generation for this persona.
+  enabled: true
+
+  # requests_per_minute_min: Lower bound of web requests issued per minute.
+  #   - Developers exhibit rapid page-turning and API doc lookups.
+  #   - Type: integer (> 0)
+  requests_per_minute_min: 6
+
+  # requests_per_minute_max: Upper bound of web requests issued per minute.
+  #   - Type: integer (>= requests_per_minute_min)
+  requests_per_minute_max: 20
+
+  # dwell_time_min_sec: Minimum human think time in seconds before next navigation.
+  #   - Type: integer (seconds, > 0)
+  dwell_time_min_sec: 4
+
+  # dwell_time_max_sec: Maximum human think time in seconds before next navigation.
+  #   - Type: integer (seconds, >= dwell_time_min_sec)
+  dwell_time_max_sec: 16
+
+  # fetch_assets: Whether to simulate authentic browser asset loading (.css, .js, .png).
+  #   - Type: boolean (true | false)
+  fetch_assets: true
+
+  # user_agents: Custom list of User-Agent strings. Empty ([]) rotates modern browsers.
+  #   - Type: list of strings
+  user_agents: []
+
+  # target_urls: Technical sites, developer portals, and documentation hubs.
+  #   - Type: list of strings (valid HTTP/HTTPS URLs)
+  target_urls:
+    - https://github.com/trending
+    - https://stackoverflow.com/questions
+    - https://docs.python.org/3/
+    - https://golang.org/doc/
+    - https://news.ycombinator.com
+
+  # search_keywords: Simulated technical queries.
+  #   - Type: list of strings
+  search_keywords:
+    - "go concurrency patterns channels"
+    - "docker multistage build cache optimization"
+    - "kubernetes ingress controller configuration"
+    - "python asyncio exception handling"
+
+# ------------------------------------------------------------------------------
+# File Share & Storage Emulation (SMB / CIFS / NFS)
+# ------------------------------------------------------------------------------
 file_share:
-    enabled: true
-    interval_sec: 25
-    shares: []
-    read_ratio: 0.7
-    write_ratio: 0.3
+  # enabled: Master switch for network drive interactions.
+  enabled: true
+
+  # interval_sec: Frequency in seconds of share operations.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 25
+
+  # shares: List of target share paths. Empty ([]) uses local simulated shares.
+  #   - Type: list of strings
+  shares: []
+
+  # read_ratio: Decimal fraction (0.0 to 1.0) of operations that represent reads.
+  #   - Developers write more frequently (commits, builds, patches) than office workers.
+  #   - Type: float (0.0 <= read_ratio <= 1.0)
+  read_ratio: 0.70
+
+  # write_ratio: Decimal fraction (0.0 to 1.0) of operations that represent writes.
+  #   - Type: float (0.0 <= write_ratio <= 1.0)
+  write_ratio: 0.30
+
+# ------------------------------------------------------------------------------
+# ICMP / Network Keepalive Emulation
+# ------------------------------------------------------------------------------
 ping:
-    enabled: false
-    interval_sec: 0
-    targets: []
+  # enabled: Disabled by default for developer endpoints to prioritize HTTP/dev noise.
+  enabled: false
+
+  # interval_sec: Frequency in seconds between ping bursts.
+  interval_sec: 0
+
+  # targets: IP addresses or hostnames targeted for ICMP reachability checks.
+  targets: []
+
+# ------------------------------------------------------------------------------
+# Local Host Activity & Process Spawning
+# ------------------------------------------------------------------------------
 host_activity:
-    enabled: true
-    interval_sec: 15
-    safe_processes:
-        - whoami
-        - git --version
-        - hostname
-    simulate_office_docs: false
-    temp_file_operations: true
+  # enabled: Master switch for local endpoint process and document emulation.
+  enabled: true
+
+  # interval_sec: Frequency in seconds of benign background process executions.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 15
+
+  # safe_processes: Approved developer CLI commands.
+  #   - Type: list of strings
+  safe_processes:
+    - whoami
+    - git --version
+    - hostname
+    - netstat -an
+
+  # simulate_office_docs: Software engineers primarily produce source code rather than Office docs.
+  #   - Type: boolean (true | false)
+  simulate_office_docs: false
+
+  # temp_file_operations: Simulates temporary build artifacts and scratch files (.tmp, .log).
+  #   - Type: boolean (true | false)
+  temp_file_operations: true

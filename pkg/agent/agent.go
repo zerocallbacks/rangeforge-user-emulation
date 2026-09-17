@@ -456,18 +456,14 @@ func (a *Agent) StopEmulation() {
 	a.PurgeArtifacts()
 }
 
-// CleanLegacyArtifacts purges any legacy directories left by earlier versions of the tooling.
+// CleanLegacyArtifacts purges any temporary directories left by earlier runs.
 func CleanLegacyArtifacts() {
 	if appData := os.Getenv("LOCALAPPDATA"); appData != "" {
 		_ = os.RemoveAll(filepath.Join(appData, "Temp", "RangeForge_HostSim"))
 		_ = os.RemoveAll(filepath.Join(appData, "RangeForge"))
-		_ = os.RemoveAll(filepath.Join(appData, "Temp", string([]byte{0x43, 0x68, 0x69, 0x72, 0x6f, 0x6e})+"UE_HostSim"))
-		_ = os.RemoveAll(filepath.Join(appData, string([]byte{0x43, 0x68, 0x69, 0x72, 0x6f, 0x6e})+"UE"))
 	}
 	_ = os.RemoveAll(filepath.Join(os.TempDir(), "rf_ue_hostsim"))
 	_ = os.RemoveAll(filepath.Join(os.TempDir(), "rf_ue_shares"))
-	_ = os.RemoveAll(filepath.Join(os.TempDir(), strings.ToLower(string([]byte{0x43, 0x68, 0x69, 0x72, 0x6f, 0x6e}))+"_ue_hostsim"))
-	_ = os.RemoveAll(filepath.Join(os.TempDir(), strings.ToLower(string([]byte{0x43, 0x68, 0x69, 0x72, 0x6f, 0x6e}))+"_ue_shares"))
 }
 
 // PurgeArtifacts cleanly removes all synthetic files created in Documents, Downloads, or Desktop.

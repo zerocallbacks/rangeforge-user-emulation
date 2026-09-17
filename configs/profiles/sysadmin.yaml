@@ -1,34 +1,131 @@
-name: "sysadmin"
-description: "Simulates IT / Range administrator performing network diagnostics, querying servers, and auditing shared storage."
+# ==============================================================================
+# RangeForge User Emulation Suite - Persona Profile: System Administrator
+# ==============================================================================
+# Represents an IT / Range administrator performing routine network audits,
+# server diagnostic routines, and firewall/router inspections.
+# Characterized by frequent administrative queries (netstat, route, ping),
+# balanced read/write audit share activity, and targeted infrastructure browsing.
+#
+# Format: Standard YAML.
+# ==============================================================================
 
+# name: Unique persona identifier matching the filename (without .yaml).
+name: sysadmin
+
+# description: Human-readable purpose of this profile in the cyber range scenario.
+description: "Simulates IT / Range administrator performing network diagnostics, querying servers, and auditing shared storage"
+
+# ------------------------------------------------------------------------------
+# Web Browsing Emulation Settings
+# ------------------------------------------------------------------------------
 web_browsing:
+  # enabled: Master switch for web traffic generation for this persona.
   enabled: true
+
+  # requests_per_minute_min: Lower bound of web requests issued per minute.
+  #   - Type: integer (> 0)
   requests_per_minute_min: 5
+
+  # requests_per_minute_max: Upper bound of web requests issued per minute.
+  #   - Type: integer (>= requests_per_minute_min)
   requests_per_minute_max: 15
+
+  # dwell_time_min_sec: Minimum human think time in seconds before next navigation.
+  #   - Type: integer (seconds, > 0)
   dwell_time_min_sec: 4
+
+  # dwell_time_max_sec: Maximum human think time in seconds before next navigation.
+  #   - Type: integer (seconds, >= dwell_time_min_sec)
   dwell_time_max_sec: 20
+
+  # fetch_assets: Whether to simulate authentic browser asset loading (.css, .js, .png).
+  #   - Often false for sysadmins accessing lightweight admin panels / text consoles.
+  #   - Type: boolean (true | false)
   fetch_assets: false
+
+  # user_agents: Custom list of User-Agent strings. Empty ([]) rotates modern browsers.
+  #   - Type: list of strings
+  user_agents: []
+
+  # target_urls: Administrative portals, router dashboards, and technical doc bases.
+  #   - Type: list of strings (valid HTTP/HTTPS URLs)
   target_urls:
-    - "http://portal.range.local"
-    - "https://docs.netgate.com/pfsense/en/latest/"
-    - "https://learn.microsoft.com/en-us/windows-server/"
+    - http://portal.range.local
+    - https://docs.netgate.com/pfsense/en/latest/
+    - https://learn.microsoft.com/en-us/windows-server/
+    - https://news.ycombinator.com
+
+  # search_keywords: Realistic sysadmin diagnostic search strings.
+  #   - Type: list of strings
   search_keywords:
     - "pfsense gateway routing table troubleshooting"
     - "active directory replication error 1722"
     - "event log id 4625 brute force analysis"
+    - "linux kernel out of memory killer troubleshooting"
 
+# ------------------------------------------------------------------------------
+# File Share & Storage Emulation (SMB / CIFS / NFS)
+# ------------------------------------------------------------------------------
 file_share:
+  # enabled: Master switch for network drive interactions.
   enabled: true
+
+  # interval_sec: Frequency in seconds of share operations.
+  #   - Type: integer (seconds, > 0)
   interval_sec: 15
+
+  # shares: List of target share paths. Empty ([]) uses local simulated shares.
+  #   - Type: list of strings
+  shares: []
+
+  # read_ratio: Decimal fraction (0.0 to 1.0) of operations that represent reads.
+  #   - Sysadmins audit configs and write logs/backups with a balanced 60/40 ratio.
+  #   - Type: float (0.0 <= read_ratio <= 1.0)
   read_ratio: 0.60
+
+  # write_ratio: Decimal fraction (0.0 to 1.0) of operations that represent writes.
+  #   - Type: float (0.0 <= write_ratio <= 1.0)
   write_ratio: 0.40
 
-host_activity:
+# ------------------------------------------------------------------------------
+# ICMP / Network Keepalive Emulation
+# ------------------------------------------------------------------------------
+ping:
+  # enabled: Sysadmins routinely ping critical gateway infrastructure.
   enabled: true
+
+  # interval_sec: Frequency in seconds between ping bursts.
+  interval_sec: 10
+
+  # targets: Gateway routers, core DNS, and domain controllers.
+  targets:
+    - 10.0.0.1
+    - 10.0.0.2
+    - 1.1.1.1
+
+# ------------------------------------------------------------------------------
+# Local Host Activity & Process Spawning
+# ------------------------------------------------------------------------------
+host_activity:
+  # enabled: Master switch for local endpoint process and document emulation.
+  enabled: true
+
+  # interval_sec: Frequency in seconds of benign background process executions.
+  #   - Type: integer (seconds, > 0)
   interval_sec: 15
+
+  # safe_processes: Approved administrative diagnostic commands.
+  #   - Type: list of strings
   safe_processes:
-    - "netstat -rn"
-    - "hostname"
-    - "uptime"
+    - whoami
+    - hostname
+    - netstat
+    - ipconfig
+
+  # simulate_office_docs: Disabled; sysadmins work primarily with scripts and configs.
+  #   - Type: boolean (true | false)
   simulate_office_docs: false
+
+  # temp_file_operations: Simulates temporary backup dumps and audit logs (.log, .bak).
+  #   - Type: boolean (true | false)
   temp_file_operations: true

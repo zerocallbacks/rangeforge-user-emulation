@@ -1,30 +1,106 @@
 # ==============================================================================
-# RangeForge User Emulation Suite - Windows Agent Configuration
-# Open-Source Cyber Range Platform
+# RangeForge User Emulation Suite - Windows Host Agent Configuration
+# ==============================================================================
+# This configuration file controls the endpoint Host Agent daemon on Windows.
+# The Host Agent runs natively as a zero-dependency process on target endpoints
+# (Windows 10, 11, Server 2016-2025), collects system telemetry (CPU, RAM, disk,
+# network interfaces, installed utilities), and autonomously emulates user activity.
+#
+# Format: Standard YAML (key: value).
 # ==============================================================================
 
-# Manager central server address (works over shared in-game / pfSense network, HTTPS only)
+# ------------------------------------------------------------------------------
+# Coordinator Connectivity
+# ------------------------------------------------------------------------------
+
+# manager_url: Base HTTPS address of the central RangeForge Manager server.
+#   - Format: "https://<manager_ip_or_domain>:<port>"
+#   - Example: "https://10.0.0.1:8443" (over cyber range internal subnet)
+#   - Example: "https://127.0.0.1:8443" (for single-machine local testing)
+#   - Note: The Host Agent communicates outbound only over HTTPS; it does NOT
+#     listen on any local network ports, making it ideal for traversal through
+#     firewalls (pfSense, Fortinet, Palo Alto) without inbound port forwards.
+#   - Type: string (URL)
 manager_url: "https://10.0.0.1:8443"
 
-# Heartbeat interval in seconds
+# heartbeat_sec: Interval in seconds between periodic telemetry check-ins.
+#   - Each heartbeat sends CPU load, RAM utilization, active IP addresses,
+#     MAC address, MTU, and detected tool inventory to the Manager.
+#   - If connectivity to the Manager drops (e.g. router reboot), the agent
+#     buffers up to 50 samples in memory and performs exponential backoff retries.
+#   - Recommended: 3 to 10 seconds.
+#   - Type: integer (seconds, > 0)
 heartbeat_sec: 5
 
-# Local network interface to bind (leave empty to auto-detect primary interface)
+# bind_interface: Network interface name to bind for egress traffic and telemetry.
+#   - Leave as empty string ("") to automatically select the default route interface.
+#   - On Windows, specify the exact adapter alias if multiple NICs exist (e.g. "Ethernet", "vEthernet").
+#   - Type: string
 bind_interface: ""
 
-# Initial user emulation profile
+# ------------------------------------------------------------------------------
+# Persona Emulation Assignment
+# ------------------------------------------------------------------------------
+
+# persona: Emulation persona profile governing behavioral noise and activity rates.
+#   - Options: "office_worker", "developer", "sysadmin", "executive"
+#   - Note: The Manager can dynamically switch an agent's persona on-the-fly
+#     during a live cyber exercise without restarting the binary.
+#   - Type: string (matches profile YAML name)
 persona: "office_worker"
 
-# Corpus paths (optional; builtin realistic corpus will be used if omitted)
+# ------------------------------------------------------------------------------
+# External Corpus Files (Optional)
+# ------------------------------------------------------------------------------
+
+# web_corpus_file: Path to a custom JSON web corpus defining target URLs and user-agents.
+#   - If left empty or omitted, RangeForge automatically loads its comprehensive
+#     built-in realistic corpus (intranet portals, documentation, news, wikis).
+#   - Type: string (filepath)
 web_corpus_file: "./corpus/web_corpus.json"
+
+# creds_file: Path to a custom JSON user credentials corpus.
+#   - Defines synthetic usernames, domains, and mock credentials used when
+#     simulating document authorship and authentication handshakes.
+#   - Type: string (filepath)
 creds_file: "./corpus/user_creds.json"
 
-# Emulation engine switches
+# shares_file: Path to custom network share definition JSON file.
+#   - Leave empty ("") to use persona share settings or built-in defaults.
+#   - Type: string (filepath)
+shares_file: ""
+
+# ------------------------------------------------------------------------------
+# Sub-Engine Switches
+# ------------------------------------------------------------------------------
+
+# enable_web: Master toggle for the web browsing simulation engine.
+#   - When true: Generates HTTP/HTTPS traffic with human think-time jitter,
+#     rotating modern browser user-agents, and static asset retrieval.
+#   - Type: boolean (true | false)
 enable_web: true
+
+# enable_shares: Master toggle for SMB / network share emulation.
+#   - When true: Interacts with configured file shares (read/write operations,
+#     temporary document generation using realistic office templates).
+#   - Type: boolean (true | false)
 enable_shares: true
+
+# enable_host_activity: Master toggle for local endpoint activity simulation.
+#   - When true: Executes benign diagnostic commands (whoami, hostname, ipconfig)
+#     and creates realistic temporary office draft files in user profile folders.
+#   - All synthetic files are scoped and automatically deleted when emulation stops.
+#   - Type: boolean (true | false)
 enable_host_activity: true
 
-# Tags to identify this node in cyber range dashboards
+# ------------------------------------------------------------------------------
+# Range Telemetry Metadata & Tagging
+# ------------------------------------------------------------------------------
+
+# tags: Arbitrary categorization labels attached to this endpoint.
+#   - Displayed in the central dashboard and filterable in the REST API.
+#   - Useful for tagging VLANs, departments, subnets, or target teams.
+#   - Type: list of strings
 tags:
   - "windows-workstation"
   - "finance-vlan"

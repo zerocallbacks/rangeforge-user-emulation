@@ -154,9 +154,6 @@ func extractToken(r *http.Request) string {
 	if c, err := r.Cookie("rangeforge_auth_token"); err == nil && c.Value != "" {
 		return c.Value
 	}
-	if c, err := r.Cookie(string([]byte{0x63, 0x68, 0x69, 0x72, 0x6f, 0x6e}) + "_auth_token"); err == nil && c.Value != "" {
-		return c.Value
-	}
 	authHdr := r.Header.Get("Authorization")
 	if strings.HasPrefix(strings.ToLower(authHdr), "bearer ") {
 		return strings.TrimSpace(authHdr[7:])

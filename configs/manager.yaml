@@ -1,24 +1,93 @@
 # ==============================================================================
-# RangeForge User Emulation Suite - Manager Configuration
-# Open-Source Cyber Range Platform
+# RangeForge User Emulation Suite - Manager Server Configuration
+# ==============================================================================
+# This configuration file controls the central RangeForge Manager daemon.
+# The Manager orchestrates the fleet of endpoint Host Agents, collects live
+# telemetry, serves the administrative web console, and exposes the REST API.
+#
+# Format: Standard YAML (key: value).
 # ==============================================================================
 
-# Manager listening host and port (HTTPS only)
+# ------------------------------------------------------------------------------
+# Network Binding Settings
+# ------------------------------------------------------------------------------
+
+# listen_host: Network IP address or hostname to bind the listening socket.
+#   - Use "0.0.0.0" to accept incoming agent and operator connections across
+#     all IPv4 network interfaces (standard for cyber range coordinators).
+#   - Use "127.0.0.1" to restrict access strictly to the local host machine.
+#   - Type: string (IPv4/IPv6 address)
+#   - Default: "0.0.0.0"
 listen_host: "0.0.0.0"
+
+# listen_port: TCP port number for the unified HTTPS and HTTP multiplexer.
+#   - Standard ports: 8443 (default HTTPS), 443 (privileged HTTPS).
+#   - Note: RangeForge automatically negotiates TLS on this port, while also
+#     gracefully handling plaintext browser requests on the same port.
+#   - Type: integer (1 - 65535)
+#   - Default: 8443
 listen_port: 8443
+
+# ------------------------------------------------------------------------------
+# TLS Encryption & Certificate Settings
+# ------------------------------------------------------------------------------
+
+# tls_enabled: Controls whether cryptographic TLS transport security is enabled.
+#   - true:  Enforces TLS 1.2 / TLS 1.3 encryption (recommended for cyber ranges).
+#   - false: Allows unencrypted communication (evaluation only).
+#   - Type: boolean (true | false)
+#   - Default: true
 tls_enabled: true
+
+# tls_cert_path: Path to the X.509 certificate file in PEM format.
+#   - If this file does not exist, RangeForge dynamically generates a high-
+#     security ECDSA P-256 self-signed certificate with automatic SANs covering
+#     localhost, physical interfaces, hostnames, and common range domain suffixes.
+#   - Type: string (filepath)
+#   - Default: "./certs/server.crt"
 tls_cert_path: "./certs/server.crt"
+
+# tls_key_path: Path to the corresponding private key file in PEM format.
+#   - Type: string (filepath)
+#   - Default: "./certs/server.key"
 tls_key_path: "./certs/server.key"
 
-# Agent heartbeat timeout before marking agent as offline (seconds)
+# ------------------------------------------------------------------------------
+# Fleet Lifecycle & Agent Heartbeat
+# ------------------------------------------------------------------------------
+
+# heartbeat_timeout_sec: Maximum duration in seconds without a heartbeat before
+# an agent is transitioned from "online" to "offline" in the fleet registry.
+#   - Typical cyber range value: 15 to 45 seconds.
+#   - Type: integer (seconds, > 0)
+#   - Default: 30
 heartbeat_timeout_sec: 30
 
-# Default persona profile automatically assigned to newly registering agents
+# ------------------------------------------------------------------------------
+# Persona Emulation Profiles
+# ------------------------------------------------------------------------------
+
+# default_persona: The baseline persona automatically assigned to endpoints that
+# register without an explicit persona command-line flag.
+#   - Available out-of-the-box personas: "office_worker", "developer", "sysadmin", "executive"
+#   - Type: string (must match a YAML filename in profiles_dir without .yaml)
+#   - Default: "office_worker"
 default_persona: "office_worker"
 
-# Directory where persona YAML profiles are loaded from
+# profiles_dir: Directory containing individual persona YAML profile definitions.
+#   - Relative paths are resolved against the current working directory.
+#   - Type: string (directory path)
+#   - Default: "./configs/profiles"
 profiles_dir: "./configs/profiles"
 
-# Security constraint: Manager is strictly designed to run on Unix platforms.
-# Set to true only in isolated evaluation environments.
+# ------------------------------------------------------------------------------
+# Platform Operating System Guard
+# ------------------------------------------------------------------------------
+
+# allow_unsupported_os: Operational platform guard.
+#   - In production cyber ranges, the Central Manager coordinator is designed
+#     for dedicated Linux/Unix server deployments.
+#   - Set to true when evaluating or testing the Manager on Windows workstations.
+#   - Type: boolean (true | false)
+#   - Default: false (automatically overridden to true when running "rangeforge-ue ui")
 allow_unsupported_os: false

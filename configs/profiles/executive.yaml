@@ -1,38 +1,128 @@
+# ==============================================================================
+# RangeForge User Emulation Suite - Persona Profile: Executive
+# ==============================================================================
+# Represents C-suite / corporate leadership endpoints.
+# Characterized by high-read share operations (briefings, board memos, financial
+# presentations), browsing executive dashboards and financial summaries, longer
+# think-time dwell periods, and minimal direct host CLI execution.
+#
+# Format: Standard YAML.
+# ==============================================================================
+
+# name: Unique persona identifier matching the filename (without .yaml).
 name: executive
-description: 'Executive & Management Emulation Persona'
+
+# description: Human-readable purpose of this profile in the cyber range scenario.
+description: "Corporate leadership persona reviewing strategic memos, executive reports, and board presentations"
+
+# ------------------------------------------------------------------------------
+# Web Browsing Emulation Settings
+# ------------------------------------------------------------------------------
 web_browsing:
-    enabled: true
-    requests_per_minute_min: 3
-    requests_per_minute_max: 8
-    dwell_time_min_sec: 10
-    dwell_time_max_sec: 35
-    fetch_assets: true
-    user_agents: []
-    target_urls:
-        - https://intranet.corp.local/executive
-        - https://docs.corp.local/strategy
-        - https://finance.corp.local/summary
-    search_keywords:
-        - quarterly budget
-        - board briefing
+  # enabled: Master switch for web traffic generation for this persona.
+  enabled: true
+
+  # requests_per_minute_min: Lower bound of web requests issued per minute.
+  #   - Executives browse deliberately with moderate frequency.
+  #   - Type: integer (> 0)
+  requests_per_minute_min: 3
+
+  # requests_per_minute_max: Upper bound of web requests issued per minute.
+  #   - Type: integer (>= requests_per_minute_min)
+  requests_per_minute_max: 8
+
+  # dwell_time_min_sec: Minimum human think time in seconds spent reading memos.
+  #   - Type: integer (seconds, > 0)
+  dwell_time_min_sec: 10
+
+  # dwell_time_max_sec: Maximum human think time in seconds spent reading memos.
+  #   - Type: integer (seconds, >= dwell_time_min_sec)
+  dwell_time_max_sec: 35
+
+  # fetch_assets: Whether to simulate authentic browser asset loading (.css, .js, .png).
+  #   - Type: boolean (true | false)
+  fetch_assets: true
+
+  # user_agents: Custom list of User-Agent strings. Empty ([]) rotates modern browsers.
+  #   - Type: list of strings
+  user_agents: []
+
+  # target_urls: Executive intranet dashboards, financial summaries, and corporate news.
+  #   - Type: list of strings (valid HTTP/HTTPS URLs)
+  target_urls:
+    - https://intranet.corp.local/executive
+    - https://docs.corp.local/strategy
+    - https://finance.corp.local/summary
+    - https://news.ycombinator.com
+    - https://en.wikipedia.org/wiki/Strategic_management
+
+  # search_keywords: Executive and governance search topics.
+  #   - Type: list of strings
+  search_keywords:
+    - "quarterly earnings forecast analysis"
+    - "board of directors meeting agenda"
+    - "cyber risk executive oversight framework"
+
+# ------------------------------------------------------------------------------
+# File Share & Storage Emulation (SMB / CIFS / NFS)
+# ------------------------------------------------------------------------------
 file_share:
-    enabled: true
-    interval_sec: 20
-    shares: []
-    read_ratio: 0.98
-    write_ratio: 0.02
+  # enabled: Master switch for network drive interactions.
+  enabled: true
+
+  # interval_sec: Frequency in seconds of share operations.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 20
+
+  # shares: List of target share paths. Empty ([]) uses local simulated shares.
+  #   - Type: list of strings
+  shares: []
+
+  # read_ratio: Decimal fraction (0.0 to 1.0) of operations that represent reads.
+  #   - Executives almost exclusively consume documents (98% read, 2% write).
+  #   - Type: float (0.0 <= read_ratio <= 1.0)
+  read_ratio: 0.98
+
+  # write_ratio: Decimal fraction (0.0 to 1.0) of operations that represent writes.
+  #   - Type: float (0.0 <= write_ratio <= 1.0)
+  write_ratio: 0.02
+
+# ------------------------------------------------------------------------------
+# ICMP / Network Keepalive Emulation
+# ------------------------------------------------------------------------------
 ping:
-    enabled: true
-    interval_sec: 15
-    targets:
-        - 127.0.0.1
-        - 1.1.1.1
+  # enabled: Master switch for periodic ICMP keepalive ping traffic.
+  enabled: true
+
+  # interval_sec: Frequency in seconds between ping bursts.
+  interval_sec: 15
+
+  # targets: Gateway routers and DNS servers.
+  targets:
+    - 127.0.0.1
+    - 1.1.1.1
+
+# ------------------------------------------------------------------------------
+# Local Host Activity & Process Spawning
+# ------------------------------------------------------------------------------
 host_activity:
-    enabled: true
-    interval_sec: 25
-    safe_processes:
-        - whoami
-        - hostname
-        - systeminfo
-    simulate_office_docs: true
-    temp_file_operations: true
+  # enabled: Master switch for local endpoint process and document emulation.
+  enabled: true
+
+  # interval_sec: Infrequent local process checks.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 25
+
+  # safe_processes: Minimal non-technical diagnostic commands.
+  #   - Type: list of strings
+  safe_processes:
+    - whoami
+    - hostname
+
+  # simulate_office_docs: Creates realistic temporary executive briefs and review notes.
+  #   - Type: boolean (true | false)
+  simulate_office_docs: true
+
+  # temp_file_operations: Simulates temporary presentation locks and drafts.
+  #   - Type: boolean (true | false)
+  temp_file_operations: true

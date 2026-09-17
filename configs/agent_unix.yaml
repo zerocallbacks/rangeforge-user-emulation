@@ -1,30 +1,96 @@
 # ==============================================================================
-# RangeForge User Emulation Suite - Unix / pfSense Agent Configuration
-# Open-Source Cyber Range Platform
+# RangeForge User Emulation Suite - Unix / Linux / pfSense Agent Configuration
+# ==============================================================================
+# This configuration file controls the endpoint Host Agent daemon on Unix-like
+# operating systems (Linux: Ubuntu/Debian/RHEL/Alpine; FreeBSD: pfSense 2.7+; macOS).
+# The Host Agent runs natively as a single static binary, monitors /proc and
+# sysctl metrics, detects system command-line utilities, and simulates realistic
+# server/workstation activity without root or administrative privileges.
+#
+# Format: Standard YAML (key: value).
 # ==============================================================================
 
-# Manager central server address (HTTPS only)
+# ------------------------------------------------------------------------------
+# Coordinator Connectivity
+# ------------------------------------------------------------------------------
+
+# manager_url: Base HTTPS address of the central RangeForge Manager server.
+#   - Format: "https://<manager_ip_or_domain>:<port>"
+#   - Example: "https://10.0.0.1:8443"
+#   - Note: The Host Agent communicates outbound only over HTTPS; no inbound
+#     ports need to be opened on firewalls or endpoint security software.
+#   - Type: string (URL)
 manager_url: "https://10.0.0.1:8443"
 
-# Heartbeat interval in seconds
+# heartbeat_sec: Interval in seconds between periodic telemetry check-ins.
+#   - Measures CPU usage from /proc/stat, memory from /proc/meminfo or sysctl,
+#     and detects network interfaces, IP addresses, and routing tables.
+#   - If connectivity to Manager is interrupted, buffers up to 50 samples in RAM.
+#   - Recommended: 3 to 10 seconds.
+#   - Type: integer (seconds, > 0)
 heartbeat_sec: 5
 
-# Local network interface to bind (leave empty to auto-detect primary interface)
+# bind_interface: Network interface to bind for egress traffic and telemetry.
+#   - Leave empty ("") to automatically bind the primary default-route interface.
+#   - On Linux, common examples: "eth0", "ens33", "enp3s0".
+#   - On FreeBSD / pfSense, common examples: "em0", "vtnet0", "igb0".
+#   - Type: string
 bind_interface: ""
 
-# Initial user emulation profile
+# ------------------------------------------------------------------------------
+# Persona Emulation Assignment
+# ------------------------------------------------------------------------------
+
+# persona: Emulation persona profile governing behavioral noise and activity rates.
+#   - Options: "developer", "sysadmin", "office_worker", "executive"
+#   - Type: string (matches profile YAML name)
 persona: "developer"
 
-# Corpus paths (optional; builtin realistic corpus will be used if omitted)
+# ------------------------------------------------------------------------------
+# External Corpus Files (Optional)
+# ------------------------------------------------------------------------------
+
+# web_corpus_file: Path to a custom JSON web corpus defining target URLs and user-agents.
+#   - If left empty or omitted, RangeForge automatically loads built-in realistic defaults.
+#   - Type: string (filepath)
 web_corpus_file: "./corpus/web_corpus.json"
+
+# creds_file: Path to a custom JSON user credentials corpus.
+#   - Type: string (filepath)
 creds_file: "./corpus/user_creds.json"
 
-# Emulation engine switches
+# shares_file: Path to custom network share definition JSON file.
+#   - Type: string (filepath)
+shares_file: ""
+
+# ------------------------------------------------------------------------------
+# Sub-Engine Switches
+# ------------------------------------------------------------------------------
+
+# enable_web: Master toggle for the web browsing simulation engine.
+#   - When true: Issues authentic HTTP/HTTPS queries, rotates modern user agents,
+#     and fetches related web assets.
+#   - Type: boolean (true | false)
 enable_web: true
+
+# enable_shares: Master toggle for NFS/CIFS/WebDAV share emulation.
+#   - When true: Interacts with configured mount points or shares.
+#   - Type: boolean (true | false)
 enable_shares: true
+
+# enable_host_activity: Master toggle for local endpoint activity simulation.
+#   - When true: Executes benign background commands (uname, uptime, ps, whoami,
+#     netstat) and creates transient temporary files with automated cleanup.
+#   - Type: boolean (true | false)
 enable_host_activity: true
 
-# Tags
+# ------------------------------------------------------------------------------
+# Range Telemetry Metadata & Tagging
+# ------------------------------------------------------------------------------
+
+# tags: Arbitrary categorization labels attached to this endpoint.
+#   - Displayed in the central dashboard and filterable in the REST API.
+#   - Type: list of strings
 tags:
   - "linux-server"
   - "dev-vlan"

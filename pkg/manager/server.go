@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -118,7 +117,6 @@ func NewServer(cfg config.ManagerConfig) (*Server, error) {
 	s.initAdminAuth()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/assets/brand-icon.png", s.handleBrandIcon)
 	mux.HandleFunc("/api/v1/agent/register", s.handleAgentRegister)
 	mux.HandleFunc("/api/v1/agent/heartbeat", s.handleAgentHeartbeat)
 	mux.HandleFunc("/api/v1/agent/task_result", s.handleAgentTaskResult)
@@ -1181,39 +1179,6 @@ func (s *Server) handleControllerWordlist(w http.ResponseWriter, r *http.Request
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"words": string(data)})
-}
-
-func (s *Server) handleBrandIcon(w http.ResponseWriter, r *http.Request) {
-	iconPath := filepath.Join("assets", "brand-icon.png")
-	if _, err := os.Stat(iconPath); err != nil {
-		if exePath, err := os.Executable(); err == nil {
-			cand1 := filepath.Join(filepath.Dir(exePath), "..", "assets", "brand-icon.png")
-			if _, err := os.Stat(cand1); err == nil {
-				iconPath = cand1
-			} else {
-				cand2 := filepath.Join(filepath.Dir(exePath), "assets", "brand-icon.png")
-				if _, err := os.Stat(cand2); err == nil {
-					iconPath = cand2
-				}
-			}
-		}
-	}
-	if _, err := os.Stat(iconPath); err == nil {
-		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Cache-Control", "public, max-age=86400")
-		http.ServeFile(w, r, iconPath)
-		return
-	}
-
-	// Embedded zero-dependency fallback for standalone operation
-	const fallbackB64 = "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"
-	if raw, err := base64.StdEncoding.DecodeString(fallbackB64); err == nil {
-		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Cache-Control", "public, max-age=86400")
-		w.Write(raw)
-		return
-	}
-	http.NotFound(w, r)
 }
 
 func (s *Server) handleControllerTopology(w http.ResponseWriter, r *http.Request) {

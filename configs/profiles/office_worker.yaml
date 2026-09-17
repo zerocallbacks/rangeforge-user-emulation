@@ -1,37 +1,142 @@
+# ==============================================================================
+# RangeForge User Emulation Suite - Persona Profile: Office Worker
+# ==============================================================================
+# Represents a non-technical knowledge worker (finance, HR, administration).
+# Characterized by high read-to-write ratio on shares, browsing intranet portals
+# and corporate wikis, longer dwell times (reading emails and documents), and
+# standard benign host queries (whoami, hostname).
+#
+# Format: Standard YAML.
+# ==============================================================================
+
+# name: Unique persona identifier matching the filename (without .yaml).
 name: office_worker
-description: 'Auto-tuned by Posture Preset: stealth'
+
+# description: Human-readable purpose of this profile in the cyber range scenario.
+description: "Knowledge worker persona focused on intranet portals, document reviews, and light browsing"
+
+# ------------------------------------------------------------------------------
+# Web Browsing Emulation Settings
+# ------------------------------------------------------------------------------
 web_browsing:
-    enabled: true
-    requests_per_minute_min: 2
-    requests_per_minute_max: 6
-    dwell_time_min_sec: 15
-    dwell_time_max_sec: 45
-    fetch_assets: true
-    user_agents: []
-    target_urls:
-        - https://intranet.corp.local
-        - http://portal.range.local
-    search_keywords: []
+  # enabled: Master switch for web traffic generation for this persona.
+  enabled: true
+
+  # requests_per_minute_min: Lower bound of web requests issued per minute.
+  #   - Type: integer (> 0)
+  requests_per_minute_min: 2
+
+  # requests_per_minute_max: Upper bound of web requests issued per minute.
+  #   - Type: integer (>= requests_per_minute_min)
+  requests_per_minute_max: 6
+
+  # dwell_time_min_sec: Minimum human think time in seconds spent reading a page.
+  #   - Emulates authentic user interaction rather than robotic scanning.
+  #   - Type: integer (seconds, > 0)
+  dwell_time_min_sec: 15
+
+  # dwell_time_max_sec: Maximum human think time in seconds spent reading a page.
+  #   - Type: integer (seconds, >= dwell_time_min_sec)
+  dwell_time_max_sec: 45
+
+  # fetch_assets: Whether to simulate authentic browser asset loading (.css, .js, .png).
+  #   - When true, creates authentic multi-request packet bursts for network sensors.
+  #   - Type: boolean (true | false)
+  fetch_assets: true
+
+  # user_agents: Custom list of User-Agent strings for HTTP request headers.
+  #   - Leave as empty list ([]) to automatically rotate modern browser signatures
+  #     (Chrome 124+, Edge 124+, Firefox 125+ on Windows 11 and Linux).
+  #   - Type: list of strings
+  user_agents: []
+
+  # target_urls: Specific URLs visited preferentially by this persona.
+  #   - If left empty ([]), falls back to the corpus internet/intranet URL list.
+  #   - Type: list of strings (valid HTTP/HTTPS URLs)
+  target_urls:
+    - https://intranet.corp.local
+    - http://portal.range.local
+    - https://en.wikipedia.org/wiki/Office_management
+    - https://news.ycombinator.com
+
+  # search_keywords: Simulated search queries entered into internal or external search engines.
+  #   - Type: list of strings
+  search_keywords:
+    - "quarterly expense report template"
+    - "travel reimbursement policy"
+    - "annual leave calendar"
+
+# ------------------------------------------------------------------------------
+# File Share & Storage Emulation (SMB / CIFS / NFS)
+# ------------------------------------------------------------------------------
 file_share:
-    enabled: true
-    interval_sec: 15
-    shares: []
-    read_ratio: 0.95
-    write_ratio: 0.05
+  # enabled: Master switch for network drive interactions.
+  enabled: true
+
+  # interval_sec: Interval in seconds between file share access events.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 15
+
+  # shares: List of target share paths (UNC paths on Windows, mount paths on Unix).
+  #   - Example Windows: "\\\\fileserver.range.local\\public"
+  #   - Example Unix: "/mnt/shares/documents"
+  #   - Leave empty ([]) to use local profile document folders as simulated shares.
+  #   - Type: list of strings
+  shares: []
+
+  # read_ratio: Decimal fraction (0.0 to 1.0) of operations that represent reads.
+  #   - Example: 0.95 means 95% of operations read documents, 5% write documents.
+  #   - Type: float (0.0 <= read_ratio <= 1.0)
+  read_ratio: 0.95
+
+  # write_ratio: Decimal fraction (0.0 to 1.0) of operations that represent writes.
+  #   - Note: read_ratio + write_ratio should equal 1.0.
+  #   - Type: float (0.0 <= write_ratio <= 1.0)
+  write_ratio: 0.05
+
+# ------------------------------------------------------------------------------
+# ICMP / Network Keepalive Emulation
+# ------------------------------------------------------------------------------
 ping:
-    enabled: true
-    interval_sec: 12
-    targets:
-        - 127.0.0.1
-        - 1.1.1.1
-        - 8.8.8.8
+  # enabled: Master switch for periodic ICMP keepalive / gateway ping traffic.
+  enabled: true
+
+  # interval_sec: Frequency in seconds between ping bursts.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 12
+
+  # targets: IP addresses or hostnames targeted for ICMP reachability checks.
+  #   - Type: list of strings (IPv4/IPv6 or DNS names)
+  targets:
+    - 127.0.0.1
+    - 1.1.1.1
+    - 8.8.8.8
+
+# ------------------------------------------------------------------------------
+# Local Host Activity & Process Spawning
+# ------------------------------------------------------------------------------
 host_activity:
-    enabled: true
-    interval_sec: 15
-    safe_processes:
-        - whoami
-        - hostname
-        - netstat
-        - ipconfig
-    simulate_office_docs: true
-    temp_file_operations: true
+  # enabled: Master switch for local endpoint process and document emulation.
+  enabled: true
+
+  # interval_sec: Interval in seconds between benign background process executions.
+  #   - Type: integer (seconds, > 0)
+  interval_sec: 15
+
+  # safe_processes: Approved non-destructive commands matching the persona's role.
+  #   - These generate realistic telemetry for endpoint detection (EDR/SIEM) sensors.
+  #   - Type: list of strings
+  safe_processes:
+    - whoami
+    - hostname
+    - netstat
+    - ipconfig
+
+  # simulate_office_docs: Creates realistic temporary documents (.docx, .xlsx, .pdf)
+  # in genuine user profile folders (Documents, Desktop) and cleans them up on exit.
+  #   - Type: boolean (true | false)
+  simulate_office_docs: true
+
+  # temp_file_operations: Simulates temporary lock files and autosave scratch files.
+  #   - Type: boolean (true | false)
+  temp_file_operations: true

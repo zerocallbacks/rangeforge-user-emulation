@@ -1,15 +1,34 @@
 {
-  "intranet_portals": null,
-  "internet_sites": [
-    "https://portal.range.local",
-    "https://wiki.corp.local",
-    "https://jira.corp.local",
-    "https://en.wikipedia.org",
-    "https://news.ycombinator.com",
-    "https://github.com"
+  "intranet_portals": [
+    "http://portal.range.local",
+    "http://wiki.corp.local/kb/index.php",
+    "http://jira.corp.local/secure/Dashboard.jspa",
+    "http://hr.range.local/benefits",
+    "http://files.corp.local/public"
   ],
-  "search_queries": null,
-  "static_assets": null,
+  "internet_sites": [
+    "https://en.wikipedia.org/wiki/Computer_security",
+    "https://en.wikipedia.org/wiki/Information_security",
+    "https://news.ycombinator.com",
+    "https://github.com",
+    "https://stackoverflow.com",
+    "https://docs.python.org/3/",
+    "https://golang.org/doc/"
+  ],
+  "search_queries": [
+    "quarterly budget analysis template",
+    "network configuration best practices",
+    "cyber range operations checklist",
+    "powershell script error 0x80070005",
+    "linux sysadmin daily checklist",
+    "pfsense firewall port forward setup"
+  ],
+  "static_assets": [
+    "/static/css/style.css",
+    "/static/js/bundle.js",
+    "/assets/img/logo.png",
+    "/favicon.ico"
+  ],
   "user_agents": [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0",
