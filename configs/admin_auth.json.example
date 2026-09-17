@@ -1,7 +1,0 @@
-{
-  "_comment": "Rename to admin_auth.json or allow RangeForge Manager to auto-generate default admin credentials (admin / rangeforge) on first startup.",
-  "username": "admin",
-  "password_hash": "d8af6cb3782ae42b4e4ae03b19ac5776809b29fbd0a3316ea0d75399b24d7e16",
-  "salt": "ebad3cddb04d1052ab0e66937c9c6031",
-  "updated_at": "2026-09-01T00:00:00Z"
-}

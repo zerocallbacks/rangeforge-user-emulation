@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Community Discussions & Support
-    url: https://github.com/zerocallbacks/rangeforge-user-emulation/discussions
-    about: Ask questions, share cyber range architectures, and discuss user emulation strategies.
-  - name: Security Vulnerability Reporting
-    url: https://github.com/zerocallbacks/rangeforge-user-emulation/security/policy
-    about: Please report security vulnerabilities confidentially according to our security policy.
