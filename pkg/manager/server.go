@@ -155,6 +155,10 @@ func NewServer(cfg config.ManagerConfig) (*Server, error) {
 	mux.HandleFunc("/api/v1/range/metrics", s.handleRangeMetrics)
 	mux.HandleFunc("/api/v1/controller/intensity", s.handleControllerIntensity)
 	mux.HandleFunc("/api/v1/healthz", s.handleHealthCheck)
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.WriteHeader(http.StatusNoContent)
+	})
 	mux.HandleFunc("/", s.handleDashboard)
 	mux.HandleFunc("/dashboard", s.handleDashboard)
 	mux.HandleFunc("/overview", s.handleDashboard)

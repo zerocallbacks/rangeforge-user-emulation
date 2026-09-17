@@ -6,113 +6,181 @@ import (
 
 // DashboardHTML contains the complete RangeForge open-source dashboard.
 const DashboardHTML = `<!DOCTYPE html>
-<html lang="en" data-theme="ocean-sapphire">
+<html lang="en" data-theme="ocean-command">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RANGEFORGE // COMMAND CENTER</title>
+  <!-- Remove browser tab icon -->
+  <link rel="icon" href="data:,">
+  <link rel="shortcut icon" href="data:,">
+  <!-- Early theme application to prevent frame flash -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('rangeforge_theme');
+        if (s === 'carbon-operations' || s === 'carbon-black' || s === 'carbon' || s === 'stealth-ops') {
+          document.documentElement.setAttribute('data-theme', 'carbon-operations');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'ocean-command');
+        }
+      } catch(e) {
+        document.documentElement.setAttribute('data-theme', 'ocean-command');
+      }
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* ==========================================================================
-       RANGEFORGE // ENTERPRISE CYBER RANGE OPERATIONS CONSOLE
-       Theme 1: Ocean Sapphire (Cobalt Deep Blue Console)
-       Theme 2: Carbon Black (Stealth Dark Operations with Clean Slate Borders)
+       RANGEFORGE // DUAL-THEME DESIGN SYSTEM
+       Theme 1: Ocean Command — Deep navy operational interface
+       Theme 2: Carbon Operations — Near-black, high-contrast technical interface
        ========================================================================== */
 
-    /* THEME 1: OCEAN SAPPHIRE / COBALT OPERATIONS CONSOLE (RICH DEEP BLUE) */
-    :root, [data-theme="ocean-sapphire"], [data-theme="cobalt-ops"], [data-theme="blue-ops"] {
-      --bg-void: #061122;
-      --bg-base: #0a1832;
-      --bg-sidebar: #08152c;
-      --bg-header: #0d1f40;
-      --bg-card: #10254c;
-      --bg-card-hover: #163060;
-      --bg-input: #08152b;
-      --bg-subtle: #132a54;
+    /* THEME 1: OCEAN COMMAND */
+    :root, [data-theme="ocean-command"], [data-theme="ocean-sapphire"], [data-theme="cobalt-ops"], [data-theme="blue-ops"] {
+      /* Shared Semantic Design Tokens */
+      --color-bg-app: #07111F;
+      --color-bg-sidebar: #081426;
+      --color-surface-primary: #0D1C31;
+      --color-surface-raised: #10233D;
+      --color-surface-hover: #142A47;
+      --color-surface-input: #0A1628;
+      --color-surface-console: #050D18;
+      --color-border-primary: rgba(148, 163, 184, 0.15);
+      --color-border-strong: rgba(56, 189, 248, 0.32);
+      --color-text-primary: #F1F5F9;
+      --color-text-secondary: #9CABC0;
+      --color-text-muted: #66758A;
+      --color-accent-primary: #38BDF8;
+      --color-status-success: #2DD4BF;
+      --color-status-warning: #F59E0B;
+      --color-status-critical: #F43F5E;
+      --color-status-info: #A78BFA;
+      --color-focus-ring: rgba(56, 189, 248, 0.45);
+      --shadow-sm: 0 1px 3px rgba(3, 8, 16, 0.50);
+      --shadow-md: 0 4px 16px rgba(3, 8, 16, 0.65);
+      --shadow-lg: 0 16px 36px rgba(2, 6, 12, 0.85);
+      --overlay-bg: rgba(7, 17, 31, 0.85);
 
-      --border-main: #1d3c6a;
-      --border-subtle: #162e52;
-      --border-focus: #00d8ff;
-      --card-border: #1d3c6a;
-      --card-header-bg: rgba(13, 31, 64, 0.65);
-      --deck-bg: linear-gradient(135deg, rgba(23, 37, 65, 0.75) 0%, var(--bg-card) 100%);
-      --th-bg: #0d1f40;
-      --stat-top-border: rgba(0, 216, 255, 0.40);
+      /* Semantic Token Backward-Compatibility Mappings */
+      --bg-void: var(--color-bg-app);
+      --bg-base: var(--color-bg-app);
+      --bg-sidebar: var(--color-bg-sidebar);
+      --bg-header: var(--color-surface-primary);
+      --bg-card: var(--color-surface-primary);
+      --bg-card-hover: var(--color-surface-hover);
+      --bg-input: var(--color-surface-input);
+      --bg-subtle: var(--color-surface-raised);
 
-      --text-bright: #f0fdfa;
-      --text-main: #e0f2fe;
-      --text-muted: #7dd3fc;
-      --text-subtle: #38bdf8;
+      --border-main: var(--color-border-primary);
+      --border-subtle: var(--color-border-primary);
+      --border-focus: var(--color-focus-ring);
+      --card-border: var(--color-border-primary);
+      --card-header-bg: var(--color-surface-raised);
+      --deck-bg: linear-gradient(135deg, rgba(16, 35, 61, 0.85) 0%, var(--color-surface-primary) 100%);
+      --th-bg: var(--color-surface-raised);
+      --stat-top-border: var(--color-border-strong);
 
-      --accent-primary: #00d8ff;
-      --accent-cobalt: #0284c7;
-      --accent-sky: #00d8ff;
-      --accent-indigo: #818cf8;
-      --accent-emerald: #10b981;
-      --accent-emerald-bg: rgba(16, 185, 129, 0.18);
-      --accent-amber: #f59e0b;
-      --accent-amber-bg: rgba(245, 158, 11, 0.18);
-      --accent-crimson: #ef4444;
-      --accent-crimson-bg: rgba(239, 68, 68, 0.18);
-      --accent-blue: #0ea5e9;
+      --text-bright: var(--color-text-primary);
+      --text-main: var(--color-text-primary);
+      --text-muted: var(--color-text-secondary);
+      --text-subtle: var(--color-text-muted);
 
-      --theme-active-border: #00d8ff;
-      --theme-glow: rgba(0, 216, 255, 0.22);
-      --theme-brand-pill: rgba(0, 216, 255, 0.16);
-      --theme-brand-pill-text: #38bdf8;
-      --theme-brand-pill-border: rgba(0, 216, 255, 0.35);
+      --accent-primary: var(--color-accent-primary);
+      --accent-cobalt: var(--color-accent-primary);
+      --accent-sky: var(--color-accent-primary);
+      --accent-indigo: var(--color-status-info);
+      --accent-emerald: var(--color-status-success);
+      --accent-emerald-bg: rgba(45, 212, 191, 0.15);
+      --accent-amber: var(--color-status-warning);
+      --accent-amber-bg: rgba(245, 158, 11, 0.15);
+      --accent-crimson: var(--color-status-critical);
+      --accent-crimson-bg: rgba(244, 63, 94, 0.15);
+      --accent-blue: var(--color-accent-primary);
 
-      --shadow-card: 0 4px 16px rgba(2, 8, 20, 0.50);
-      --shadow-modal: 0 20px 50px rgba(2, 6, 15, 0.85), 0 0 0 1px var(--card-border);
+      --theme-active-border: var(--color-accent-primary);
+      --theme-glow: rgba(56, 189, 248, 0.20);
+      --theme-brand-pill: rgba(56, 189, 248, 0.15);
+      --theme-brand-pill-text: var(--color-accent-primary);
+      --theme-brand-pill-border: var(--color-border-strong);
+
+      --shadow-card: var(--shadow-md);
+      --shadow-modal: var(--shadow-lg), 0 0 0 1px var(--color-border-primary);
     }
 
-    /* THEME 2: CARBON BLACK (STEALTH OPERATIONS // VIBRANT TELEMETRY // NO COLORED BORDERS) */
-    [data-theme="carbon-black"], [data-theme="stealth-ops"] {
-      --bg-void: #09090b;
-      --bg-base: #0d0d10;
-      --bg-sidebar: #111114;
-      --bg-header: #131317;
-      --bg-card: #16161b;
-      --bg-card-hover: #1e1e25;
-      --bg-input: #121216;
-      --bg-subtle: #1a1a20;
+    /* THEME 2: CARBON OPERATIONS */
+    [data-theme="carbon-operations"], [data-theme="carbon-black"], [data-theme="carbon"], [data-theme="stealth-ops"] {
+      /* Shared Semantic Design Tokens */
+      --color-bg-app: #0B0C0F;
+      --color-bg-sidebar: #0D0F13;
+      --color-surface-primary: #121419;
+      --color-surface-raised: #171A20;
+      --color-surface-hover: #1C2028;
+      --color-surface-input: #0E1015;
+      --color-surface-console: #07080A;
+      --color-border-primary: rgba(203, 213, 225, 0.12);
+      --color-border-strong: rgba(45, 212, 191, 0.30);
+      --color-text-primary: #F3F4F6;
+      --color-text-secondary: #A6AFBD;
+      --color-text-muted: #717B8B;
+      --color-accent-primary: #55B9F3;
+      --color-status-success: #2DD4BF;
+      --color-status-warning: #FBBF24;
+      --color-status-critical: #FB4964;
+      --color-status-info: #B69CF6;
+      --color-focus-ring: rgba(85, 185, 243, 0.45);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.60);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.75);
+      --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.90);
+      --overlay-bg: rgba(11, 12, 15, 0.85);
 
-      --border-main: #27272e;
-      --border-subtle: #1e1e24;
-      --border-focus: #3b82f6;
-      --card-border: #27272e;
-      --card-header-bg: rgba(19, 19, 23, 0.70);
-      --deck-bg: linear-gradient(135deg, rgba(28, 30, 40, 0.85) 0%, var(--bg-card) 100%);
-      --th-bg: #141418;
-      --stat-top-border: rgba(59, 130, 246, 0.35);
+      /* Semantic Token Backward-Compatibility Mappings */
+      --bg-void: var(--color-bg-app);
+      --bg-base: var(--color-bg-app);
+      --bg-sidebar: var(--color-bg-sidebar);
+      --bg-header: var(--color-surface-primary);
+      --bg-card: var(--color-surface-primary);
+      --bg-card-hover: var(--color-surface-hover);
+      --bg-input: var(--color-surface-input);
+      --bg-subtle: var(--color-surface-raised);
 
-      --text-bright: #ffffff;
-      --text-main: #e4e4e7;
-      --text-muted: #a1a1aa;
-      --text-subtle: #71717a;
+      --border-main: var(--color-border-primary);
+      --border-subtle: var(--color-border-primary);
+      --border-focus: var(--color-focus-ring);
+      --card-border: var(--color-border-primary);
+      --card-header-bg: var(--color-surface-raised);
+      --deck-bg: linear-gradient(135deg, rgba(23, 26, 32, 0.85) 0%, var(--color-surface-primary) 100%);
+      --th-bg: var(--color-surface-raised);
+      --stat-top-border: var(--color-border-strong);
 
-      --accent-primary: #3b82f6;
-      --accent-cobalt: #2563eb;
-      --accent-sky: #38bdf8;
-      --accent-indigo: #6366f1;
-      --accent-emerald: #10b981;
-      --accent-emerald-bg: rgba(16, 185, 129, 0.15);
-      --accent-amber: #f59e0b;
-      --accent-amber-bg: rgba(245, 158, 11, 0.15);
-      --accent-crimson: #ef4444;
-      --accent-crimson-bg: rgba(239, 68, 68, 0.15);
-      --accent-blue: #3b82f6;
+      --text-bright: var(--color-text-primary);
+      --text-main: var(--color-text-primary);
+      --text-muted: var(--color-text-secondary);
+      --text-subtle: var(--color-text-muted);
 
-      --theme-active-border: #3b82f6;
-      --theme-glow: rgba(59, 130, 246, 0.22);
-      --theme-brand-pill: rgba(59, 130, 246, 0.18);
-      --theme-brand-pill-text: #60a5fa;
-      --theme-brand-pill-border: rgba(59, 130, 246, 0.35);
+      --accent-primary: var(--color-accent-primary);
+      --accent-cobalt: var(--color-accent-primary);
+      --accent-sky: var(--color-accent-primary);
+      --accent-indigo: var(--color-status-info);
+      --accent-emerald: var(--color-status-success);
+      --accent-emerald-bg: rgba(45, 212, 191, 0.12);
+      --accent-amber: var(--color-status-warning);
+      --accent-amber-bg: rgba(251, 191, 36, 0.12);
+      --accent-crimson: var(--color-status-critical);
+      --accent-crimson-bg: rgba(251, 73, 100, 0.12);
+      --accent-blue: var(--color-accent-primary);
 
-      --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.50);
-      --shadow-modal: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 0 1px var(--card-border);
+      --theme-active-border: var(--color-accent-primary);
+      --theme-glow: rgba(85, 185, 243, 0.18);
+      --theme-brand-pill: rgba(85, 185, 243, 0.15);
+      --theme-brand-pill-text: var(--color-accent-primary);
+      --theme-brand-pill-border: var(--color-border-strong);
+
+      --shadow-card: var(--shadow-md);
+      --shadow-modal: var(--shadow-lg), 0 0 0 1px var(--color-border-primary);
     }
 
     * {
@@ -355,8 +423,8 @@ const DashboardHTML = `<!DOCTYPE html>
       transform: translateY(-1.5px) translateX(2px);
     }
     .nav-item.active {
-      background: rgba(37, 99, 235, 0.18);
-      color: #38bdf8;
+      background: var(--theme-brand-pill);
+      color: var(--color-accent-primary);
       font-weight: 600;
       border: 1px solid var(--border-main);
       border-left: 3px solid var(--theme-active-border) !important;
@@ -383,7 +451,7 @@ const DashboardHTML = `<!DOCTYPE html>
       padding: 1px 5px;
       border-radius: 4px;
       background: var(--bg-subtle);
-      color: #38bdf8;
+      color: var(--color-accent-primary);
     }
 
     /* PINNED SIDEBAR FOOTER */
@@ -415,7 +483,7 @@ const DashboardHTML = `<!DOCTYPE html>
       gap: 0.3rem;
     }
     .footer-action-link:hover {
-      color: #38bdf8;
+      color: var(--color-accent-primary);
       background: var(--bg-card-hover);
       transform: translateY(-1.5px);
     }
@@ -472,10 +540,10 @@ const DashboardHTML = `<!DOCTYPE html>
     }
     .sidebar-toggle-btn:hover {
       background: var(--bg-card-hover);
-      color: #38bdf8;
+      color: var(--color-accent-primary);
       transform: translateY(-2px);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-      border-color: rgba(56, 189, 248, 0.4) !important;
+      border-color: var(--color-border-strong) !important;
     }
     .page-title-wrap {
       display: flex;
@@ -512,10 +580,10 @@ const DashboardHTML = `<!DOCTYPE html>
     }
     .header-util-btn:hover {
       background: var(--bg-card-hover);
-      color: #38bdf8;
+      color: var(--color-accent-primary);
       transform: translateY(-2px);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-      border-color: rgba(56, 189, 248, 0.4) !important;
+      border-color: var(--color-border-strong) !important;
     }
 
     /* UNIVERSAL BUTTONS HOVER & TACTILE ELEVATION */
@@ -541,13 +609,12 @@ const DashboardHTML = `<!DOCTYPE html>
       transform: translateY(0);
     }
     .btn-primary {
-      background: #10b981;
-      color: #042f1f;
-      border-color: #10b981;
+      background: var(--color-status-success);
+      color: var(--color-bg-app);
+      border-color: var(--color-status-success);
     }
     .btn-primary:hover {
-      background: #059669;
-      border-color: #059669;
+      filter: brightness(1.08);
     }
     .btn-secondary {
       background: var(--bg-card);
@@ -556,8 +623,8 @@ const DashboardHTML = `<!DOCTYPE html>
     }
     .btn-secondary:hover {
       background: var(--bg-card-hover);
-      color: #38bdf8;
-      border-color: rgba(56, 189, 248, 0.4) !important;
+      color: var(--color-accent-primary);
+      border-color: var(--color-border-strong) !important;
     }
     .btn-danger {
       background: var(--accent-crimson);
@@ -565,8 +632,7 @@ const DashboardHTML = `<!DOCTYPE html>
       border-color: var(--accent-crimson);
     }
     .btn-danger:hover {
-      background: #dc2626;
-      border-color: #dc2626;
+      filter: brightness(0.9);
     }
 
     /* UNIVERSAL FIELDS HOVER & TACTILE FLOATING MICRO-ANIMATION */
@@ -620,7 +686,7 @@ const DashboardHTML = `<!DOCTYPE html>
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
     .card:hover, .stat-card:hover, .operations-deck-card:hover {
-      border-color: rgba(56, 189, 248, 0.35) !important;
+      border-color: var(--color-border-strong) !important;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
     }
     .card-header {
@@ -808,12 +874,12 @@ const DashboardHTML = `<!DOCTYPE html>
     }
     .tool-badge-net {
       background: rgba(37, 99, 235, 0.16);
-      color: #60a5fa;
+      color: var(--color-accent-primary);
       border: 1px solid rgba(59, 130, 246, 0.3);
     }
     .tool-badge-host {
       background: rgba(16, 185, 129, 0.16);
-      color: #34d399;
+      color: var(--color-status-success);
       border: 1px solid rgba(16, 185, 129, 0.3);
     }
     .os-badge {
@@ -839,7 +905,7 @@ const DashboardHTML = `<!DOCTYPE html>
       align-items: center;
       gap: 0.75rem;
       font-size: 0.75rem;
-      color: #bfdbfe;
+      color: var(--color-text-secondary);
     }
     .stealth-shell-banner svg {
       flex-shrink: 0;
@@ -848,13 +914,13 @@ const DashboardHTML = `<!DOCTYPE html>
 
     /* TERMINAL CONTAINER */
     .terminal-container {
-      background: var(--bg-void);
+      background: var(--color-surface-console);
       border: 1px solid var(--border-main) !important;
       border-radius: 6px;
       padding: 1rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.75rem;
-      color: #cbd5e1;
+      color: var(--color-text-primary);
       min-height: 220px;
       max-height: 380px;
       overflow-y: auto;
@@ -870,7 +936,7 @@ const DashboardHTML = `<!DOCTYPE html>
     }
     .cmd-run-block {
       margin-bottom: 0.85rem;
-      border-left: 2px solid #38bdf8;
+      border-left: 2px solid var(--color-accent-primary);
       padding-left: 0.65rem;
     }
     .cmd-run-header {
@@ -879,7 +945,7 @@ const DashboardHTML = `<!DOCTYPE html>
       margin-bottom: 0.25rem;
     }
     .cmd-run-body {
-      color: #f8fafc;
+      color: var(--color-text-primary);
     }
 
     /* FORM STYLES */
@@ -1012,22 +1078,22 @@ const DashboardHTML = `<!DOCTYPE html>
 
     .copy-chip {
       cursor: pointer;
-      border-bottom: 1px dashed var(--border-focus);
-      color: #38bdf8;
+      border-bottom: 1px dashed var(--color-border-strong);
+      color: var(--color-accent-primary);
       transition: color 0.15s ease;
     }
     .copy-chip:hover {
-      color: var(--accent-emerald);
+      color: var(--color-status-success);
     }
 
     .mono {
       font-family: 'JetBrains Mono', monospace;
     }
     .text-muted {
-      color: var(--text-muted);
+      color: var(--color-text-secondary);
     }
     .text-bright {
-      color: var(--text-bright);
+      color: var(--color-text-primary);
     }
 
     /* REAL-TIME TELEMETRY SPARKLINES */
@@ -1039,14 +1105,14 @@ const DashboardHTML = `<!DOCTYPE html>
     }
     .sparkline-line-cpu {
       fill: none;
-      stroke: #60a5fa;
+      stroke: var(--color-accent-primary);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
     .sparkline-line-ram {
       fill: none;
-      stroke: #a78bfa;
+      stroke: var(--color-status-info);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -1111,8 +1177,8 @@ const DashboardHTML = `<!DOCTYPE html>
       background: var(--bg-subtle);
     }
     .filter-pill.active {
-      background: rgba(0, 216, 255, 0.18);
-      color: #38bdf8;
+      background: var(--theme-brand-pill);
+      color: var(--color-accent-primary);
       font-weight: 700;
     }
     .activity-search-input {
@@ -1136,19 +1202,19 @@ const DashboardHTML = `<!DOCTYPE html>
       gap: 4px;
       font-size: 0.62rem;
       font-weight: 700;
-      color: #10b981;
+      color: var(--color-status-success);
       letter-spacing: 0.05em;
-      background: rgba(16, 185, 129, 0.14);
+      background: rgba(45, 212, 191, 0.14);
       padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(45, 212, 191, 0.3);
     }
     .activity-live-dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 6px #10b981;
+      background: var(--color-status-success);
+      box-shadow: 0 0 6px var(--color-status-success);
       animation: tickerPulse 1.2s infinite;
     }
 
@@ -1175,7 +1241,7 @@ const DashboardHTML = `<!DOCTYPE html>
       border: 1px solid var(--border-main);
       padding: 2px 7px;
       border-radius: 4px;
-      color: #38bdf8;
+      color: var(--color-accent-primary);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     }
 
@@ -1345,13 +1411,333 @@ const DashboardHTML = `<!DOCTYPE html>
       }
     }
 
-    @media (max-width: 420px) {
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-      .deck-right button {
-        flex: 1 1 100%;
-      }
+    /* ACCESSIBILITY FOCUS INDICATORS & SCROLLBARS */
+    :focus-visible {
+      outline: 2px solid var(--color-focus-ring);
+      outline-offset: 1px;
+    }
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-surface-hover) var(--color-bg-app);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--color-bg-app);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-surface-hover);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-text-muted);
+    }
+
+    /* FUNCTIONAL TOOL CAPABILITIES CHIPS & EXPANDABLE DRAWER */
+    .tool-groups-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .tool-summary-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .tool-cat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--color-text-secondary);
+      cursor: default;
+    }
+    .tool-cat-marker {
+      font-size: 0.65rem;
+      color: var(--color-accent-primary);
+      font-weight: 600;
+    }
+    .tool-expand-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      background: transparent;
+      border: 1px dashed var(--color-border-primary);
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--color-accent-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tool-expand-trigger:hover, .tool-expand-trigger:focus-visible {
+      background: var(--color-surface-hover);
+      border-color: var(--color-accent-primary);
+    }
+    .tool-details-drawer {
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 6px;
+      padding: 0.65rem;
+      margin-top: 0.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .tool-drawer-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .tool-drawer-group-title {
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+    .tool-drawer-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .tool-item-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid var(--color-border-primary);
+      background: var(--color-surface-primary);
+      color: var(--color-text-secondary);
+    }
+    .tool-status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tool-status-dot.verified {
+      background: var(--color-status-success);
+      box-shadow: 0 0 4px var(--color-status-success);
+    }
+    .tool-status-dot.detected {
+      background: var(--color-accent-primary);
+    }
+    .tool-status-dot.unavailable {
+      background: var(--color-text-muted);
+      opacity: 0.6;
+    }
+
+    /* PERSONA ASSIGNMENT CELL */
+    .persona-assignment-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .persona-active-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--color-accent-primary);
+      background: rgba(56, 189, 248, 0.10);
+      border: 1px solid var(--color-border-primary);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+    .persona-saving-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      color: var(--color-status-warning);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    /* REMOTE COMMAND CONSOLE WORKSPACE */
+    .cmd-console-workspace {
+      background: var(--color-surface-console);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .session-isolation-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.85rem;
+      background: var(--color-surface-raised);
+      border-bottom: 1px solid var(--color-border-primary);
+      font-size: 0.72rem;
+    }
+    .isolation-status-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .isolation-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-status-success);
+      box-shadow: 0 0 5px var(--color-status-success);
+      flex-shrink: 0;
+    }
+    .isolation-badge {
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      background: var(--color-surface-primary);
+      border: 1px solid var(--color-border-primary);
+      color: var(--color-text-secondary);
+    }
+    .isolation-info-toggle {
+      background: transparent;
+      border: none;
+      color: var(--color-accent-primary);
+      font-size: 0.70rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      transition: background 0.15s ease;
+    }
+    .isolation-info-toggle:hover {
+      background: var(--color-surface-hover);
+    }
+    .isolation-details-drawer {
+      padding: 0.75rem 0.85rem;
+      background: var(--color-surface-primary);
+      border-bottom: 1px solid var(--color-border-primary);
+      font-size: 0.70rem;
+      line-height: 1.5;
+    }
+    .isolation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.75rem;
+    }
+    .isolation-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 0.5rem;
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 4px;
+    }
+    .isolation-item strong {
+      color: var(--color-text-primary);
+      font-size: 0.72rem;
+    }
+    .isolation-item span {
+      color: var(--color-text-secondary);
+      font-size: 0.68rem;
+    }
+    .cmd-output-pane {
+      min-height: 280px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding: 0.85rem;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      background: var(--color-surface-console);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .cmd-exec-block {
+      background: var(--color-surface-primary);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .cmd-exec-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.65rem;
+      background: var(--color-surface-raised);
+      border-bottom: 1px solid var(--color-border-primary);
+      font-size: 0.70rem;
+      color: var(--color-text-secondary);
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .cmd-exec-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .cmd-exec-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .cmd-copy-btn {
+      background: transparent;
+      border: 1px solid var(--color-border-primary);
+      color: var(--color-text-secondary);
+      border-radius: 3px;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .cmd-copy-btn:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text-primary);
+      border-color: var(--color-accent-primary);
+    }
+    .cmd-exec-body {
+      padding: 0.65rem;
+      font-family: 'JetBrains Mono', 'Consolas', monospace;
+      font-size: 0.76rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: var(--color-text-primary);
+    }
+    .cmd-exec-body.stderr {
+      color: var(--color-status-critical);
+    }
+    .cmd-badge-running {
+      color: var(--color-status-warning);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .cmd-badge-success {
+      color: var(--color-status-success);
+      font-weight: 600;
+    }
+    .cmd-badge-failed {
+      color: var(--color-status-critical);
+      font-weight: 600;
     }
   </style>
 </head>
@@ -1362,13 +1748,13 @@ const DashboardHTML = `<!DOCTYPE html>
     <div class="top-bar-left">
       <span class="top-status-indicator"></span>
       <span style="letter-spacing:0.04em;">RANGEFORGE CONTROLLER</span>
-      <span style="color:#38bdf8;">|</span>
+      <span style="color:var(--color-accent-primary);">|</span>
       <span style="color:var(--text-subtle);" id="topActiveRangeLabel">Cyber Range</span>
     </div>
     <div class="top-bar-right">
       <span>UTC: <strong id="utc-clock" style="color:var(--text-bright);">--:--:--</strong></span>
       <span>LOCAL: <strong id="loc-clock" style="color:var(--text-bright);">--:--:--</strong></span>
-      <span style="color:#38bdf8;">HTTPS (PORT 8443)</span>
+      <span style="color:var(--color-accent-primary);">HTTPS (PORT 8443)</span>
     </div>
   </header>
 
@@ -1431,7 +1817,7 @@ const DashboardHTML = `<!DOCTYPE html>
       <div class="sidebar-footer">
         <span id="sidebarUserLabel" style="font-weight:600; color:var(--text-bright);">admin</span>
         <div style="display:flex; gap:0.25rem;">
-          <button class="footer-action-link" onclick="toggleTheme()" title="Toggle Theme (Ocean Sapphire Cobalt / Carbon Black)">
+          <button class="footer-action-link" onclick="toggleTheme()" title="Toggle Theme (Ocean Command / Carbon Operations)">
             <span class="footer-action-link-text">Theme</span>
           </button>
           <button class="footer-action-link" onclick="openAdminModal()" title="Change Admin Password">
@@ -1464,7 +1850,7 @@ const DashboardHTML = `<!DOCTYPE html>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
             Export Brief
           </button>
-          <button class="header-util-btn" onclick="toggleTheme()" title="Toggle Theme (Ocean Sapphire Cobalt / Carbon Black)">
+          <button class="header-util-btn" onclick="toggleTheme()" title="Toggle Theme (Ocean Command / Carbon Operations)">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
             Theme
           </button>
@@ -1496,7 +1882,7 @@ const DashboardHTML = `<!DOCTYPE html>
                 <span class="ticker-pulse-dot" id="deckPulseDot"></span>
                 <span class="mono" id="deckSessionTime" style="font-size:0.70rem; color:var(--text-bright);">SESSION: 00:00:00</span>
                 <span style="color:var(--text-subtle); opacity:0.6;">|</span>
-                <span class="mono" id="deckActionCount" style="font-size:0.70rem; color:#38bdf8;">THROUGHPUT: 0 OPS</span>
+                <span class="mono" id="deckActionCount" style="font-size:0.70rem; color:var(--color-accent-primary);">THROUGHPUT: 0 OPS</span>
               </div>
             </div>
           </div>
@@ -1520,28 +1906,28 @@ const DashboardHTML = `<!DOCTYPE html>
         <div class="stats-row">
           <div class="stat-card">
             <span class="stat-label">Operational State</span>
-            <span class="stat-value" id="statOpState" style="font-size:1.15rem; color:#f59e0b;">STANDBY</span>
+            <span class="stat-value" id="statOpState" style="font-size:1.15rem; color:var(--color-status-warning);">STANDBY</span>
             <span class="stat-desc">Range execution status</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Active Endpoints</span>
-            <span class="stat-value" id="statEndpoints" style="color:#38bdf8;">0 / 0</span>
+            <span class="stat-value" id="statEndpoints" style="color:var(--color-accent-primary);">0 / 0</span>
             <span class="stat-desc">Online host agents</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Traffic Intensity</span>
-            <span class="stat-value" id="statIntensity" style="color:#f59e0b;">Medium</span>
+            <span class="stat-value" id="statIntensity" style="color:var(--color-status-warning);">Medium</span>
             <span class="stat-desc">Global noise multiplier</span>
           </div>
           <div class="stat-card">
             <span class="stat-label">Fleet Avg CPU</span>
-            <span class="stat-value" id="statCpu" style="color:#60a5fa;">0%</span>
+            <span class="stat-value" id="statCpu" style="color:var(--color-accent-primary);">0%</span>
             <span class="stat-desc">Aggregate endpoint load</span>
             <svg id="sparklineCpu" class="sparkline-svg" viewBox="0 0 120 28" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="cpuGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.45"/>
-                  <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                  <stop offset="0%" stop-color="var(--color-accent-primary)" stop-opacity="0.45"/>
+                  <stop offset="100%" stop-color="var(--color-accent-primary)" stop-opacity="0.0"/>
                 </linearGradient>
               </defs>
               <polygon id="sparklineCpuPoly" points="0,28 120,28" fill="url(#cpuGrad)"/>
@@ -1550,13 +1936,13 @@ const DashboardHTML = `<!DOCTYPE html>
           </div>
           <div class="stat-card">
             <span class="stat-label">Fleet Avg RAM</span>
-            <span class="stat-value" id="statRam" style="color:#a78bfa;">0%</span>
+            <span class="stat-value" id="statRam" style="color:var(--color-status-info);">0%</span>
             <span class="stat-desc">Memory consumption</span>
             <svg id="sparklineRam" class="sparkline-svg" viewBox="0 0 120 28" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="ramGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.45"/>
-                  <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.0"/>
+                  <stop offset="0%" stop-color="var(--color-status-info)" stop-opacity="0.45"/>
+                  <stop offset="100%" stop-color="var(--color-status-info)" stop-opacity="0.0"/>
                 </linearGradient>
               </defs>
               <polygon id="sparklineRamPoly" points="0,28 120,28" fill="url(#ramGrad)"/>
@@ -1565,7 +1951,7 @@ const DashboardHTML = `<!DOCTYPE html>
           </div>
           <div class="stat-card">
             <span class="stat-label">Wordlist Files</span>
-            <span class="stat-value" id="statFilesCreated" style="color:#34d399;">0</span>
+            <span class="stat-value" id="statFilesCreated" style="color:var(--color-status-success);">0</span>
             <span class="stat-desc">Created (<span id="statFilesDeleted">0</span> cleaned)</span>
           </div>
         </div>
@@ -1667,11 +2053,11 @@ const DashboardHTML = `<!DOCTYPE html>
             <table class="data-table" id="fleetDetailTable">
               <thead>
                 <tr>
-                  <th style="width:16%;">Host Endpoint</th>
-                  <th style="width:20%;">Exact Operating System</th>
-                  <th style="width:12%;">Network IP</th>
-                  <th style="width:24%;">Detected UE Traffic Tools</th>
-                  <th style="width:16%;">Assigned Persona</th>
+                  <th style="width:18%;">Host Endpoint</th>
+                  <th style="width:18%;">Exact Operating System</th>
+                  <th style="width:13%;">Network IP</th>
+                  <th style="width:25%;">Detected Capabilities &amp; Tools</th>
+                  <th style="width:14%;">Assigned Persona</th>
                   <th style="width:6%;">Status</th>
                   <th style="width:6%; text-align:right;">Actions</th>
                 </tr>
@@ -1692,14 +2078,35 @@ const DashboardHTML = `<!DOCTYPE html>
               <span class="card-title">FLEET REMOTE COMMAND CONSOLE</span>
               <span style="font-size:0.70rem; color:var(--text-muted);">Execute authorized administrative and simulation commands across all hosts simultaneously or targeted endpoints.</span>
             </div>
-            <span class="status-badge status-running" style="font-family:'JetBrains Mono', monospace;">STEALTH SHELL ACTIVE</span>
+            <span class="status-badge status-standby" id="cmdConsoleStatusBadge" style="font-family:'JetBrains Mono', monospace;">CONSOLE READY</span>
           </div>
-          <div class="card-body" style="display:flex; flex-direction:column; gap:1rem;">
-            <!-- Stealth History Suppression Banner -->
-            <div class="stealth-shell-banner">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              <div>
-                <strong>Shell History Suppression Active:</strong> Commands executed through this manager inject <code class="mono">HISTFILE=/dev/null</code>, <code class="mono">HISTSIZE=0</code>, and PowerShell <code class="mono">-NoProfile</code> so commands are <strong>never written to user shell histories</strong> and will not confuse exercise participants.
+          <div class="card-body" style="display:flex; flex-direction:column; gap:0.85rem;">
+            <!-- Compact Session-Isolation Status Bar with Expandable Protocol Details -->
+            <div class="session-isolation-bar">
+              <div class="isolation-status-left">
+                <span class="isolation-dot"></span>
+                <span class="isolation-title" style="font-weight:600; color:var(--color-text-primary);">Session Isolation Active:</span>
+                <span class="isolation-badge">Environment-Specific</span>
+                <span style="color:var(--color-text-muted); font-size:0.68rem;">Shell process history suppression verified by OS runtime</span>
+              </div>
+              <button type="button" class="isolation-info-toggle" id="isolationToggleBtn" onclick="toggleIsolationDetails()" aria-expanded="false" title="View environment isolation protocol">
+                <span id="isolationToggleText">View Protocol Details ▾</span>
+              </button>
+            </div>
+            <div class="isolation-details-drawer" id="isolationDetailsDrawer" style="display:none;">
+              <div class="isolation-grid">
+                <div class="isolation-item">
+                  <strong>Windows (PowerShell)</strong>
+                  <span>Executed via <code class="mono">powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive</code>. Child process runspaces bypass interactive PSReadLine command history logging.</span>
+                </div>
+                <div class="isolation-item">
+                  <strong>Linux (Bash / sh)</strong>
+                  <span>Executed via isolated subshell with environment overrides <code class="mono">HISTFILE=/dev/null HISTSIZE=0</code>. Commands avoid user shell history files (<code class="mono">.bash_history</code>).</span>
+                </div>
+                <div class="isolation-item">
+                  <strong>FreeBSD / pfSense (sh)</strong>
+                  <span>Executed within a detached standard POSIX <code class="mono">/bin/sh</code> child process with zero persistent session history buffers.</span>
+                </div>
               </div>
             </div>
 
@@ -1708,7 +2115,7 @@ const DashboardHTML = `<!DOCTYPE html>
               <div style="flex:0 0 260px;">
                 <label class="form-label">Target Scope</label>
                 <select class="form-input form-input-mono" id="fleetCmdTarget" style="width:100%;">
-                  <option value="ALL">⚡ ALL HOSTS (Fleet-Wide Execution)</option>
+                  <option value="ALL">⚡ ALL HOSTS (Fleet-Wide Simultaneous)</option>
                   <option value="ALL_WINDOWS">🪟 All Windows Hosts</option>
                   <option value="ALL_LINUX">🐧 All Linux Hosts</option>
                 </select>
@@ -1717,7 +2124,7 @@ const DashboardHTML = `<!DOCTYPE html>
                 <label class="form-label">Command Line</label>
                 <div style="display:flex; gap:0.5rem;">
                   <input type="text" class="form-input form-input-mono" id="fleetCmdInput" placeholder="e.g. whoami, hostname, ipconfig, netstat -ano, systeminfo, uname -a..." style="flex:1;" onkeydown="if(event.key==='Enter') executeFleetCommand()">
-                  <button class="btn btn-primary" onclick="executeFleetCommand()">Run Command</button>
+                  <button class="btn btn-primary" id="fleetCmdRunBtn" onclick="executeFleetCommand()">Run Command</button>
                 </div>
               </div>
             </div>
@@ -1733,9 +2140,11 @@ const DashboardHTML = `<!DOCTYPE html>
               <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.70rem; margin-left:auto;" onclick="clearFleetTerminal()">Clear Console</button>
             </div>
 
-            <!-- Execution Results Terminal -->
-            <div class="terminal-container" id="fleetCmdResults">
-              <div style="color:var(--text-muted); font-size:0.72rem;">[RANGEFORGE STEALTH SHELL READY] Select target host(s), enter command, and execute. Zero footprint in user command history.</div>
+            <!-- Execution Results Workspace -->
+            <div class="cmd-console-workspace">
+              <div class="cmd-output-pane" id="fleetCmdResults" tabindex="0" role="region" aria-label="Command console output">
+                <div style="color:var(--color-text-muted); font-size:0.74rem;">[COMMAND CONSOLE READY] Administrative execution workspace. Select target scope, enter diagnostic command, and execute.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1801,13 +2210,13 @@ const DashboardHTML = `<!DOCTYPE html>
           <div class="card-header">
             <div>
               <span class="card-title">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-primary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 Blue Team Noise &amp; Binary Polling Control
               </span>
               <div style="font-size:0.70rem; color:var(--text-muted); margin-top:2px;">Regulate host binary execution rates and network beaconing to prevent Sysmon / EDR alert spam. Confines file creation strictly to Documents, Downloads, and Desktop with zero simulation footprints.</div>
             </div>
             <div style="display:flex; gap:0.5rem; align-items:center;">
-              <button class="btn btn-secondary" onclick="purgeAllArtifactsNow()" style="color:#ef4444; border-color:rgba(239,68,68,0.3);" title="Instantly purge all synthetic files from endpoints">
+              <button class="btn btn-secondary" onclick="purgeAllArtifactsNow()" style="color:var(--color-status-critical); border-color:rgba(244,63,94,0.3);" title="Instantly purge all synthetic files from endpoints">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                 Purge All UE Artifacts Now
               </button>
@@ -1824,33 +2233,33 @@ const DashboardHTML = `<!DOCTYPE html>
               <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:0.75rem;">
                 <div class="noise-preset-box" id="presetStealth" onclick="setNoisePreset('stealth')" style="background:var(--bg-subtle); border:1px solid var(--border-subtle); border-radius:6px; padding:0.85rem; cursor:pointer; transition:all 0.2s ease;">
                   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
-                    <span style="font-weight:700; font-size:0.78rem; color:#38bdf8; display:flex; align-items:center; gap:0.3rem;">
+                    <span style="font-weight:700; font-size:0.78rem; color:var(--color-accent-primary); display:flex; align-items:center; gap:0.3rem;">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                       Stealth Mode (EDR Quiet)
                     </span>
-                    <span class="badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-size:0.65rem;">Recommended</span>
+                    <span class="badge" style="background:rgba(56,189,248,0.15); color:var(--color-accent-primary); font-size:0.65rem;">Recommended</span>
                   </div>
                   <div style="font-size:0.68rem; color:var(--text-muted); line-height:1.3;">Suppresses frequent binary spawns (300s pacing). Spaces beaconing to 30s so trainees can isolate red team activity without Sysmon noise fatigue.</div>
                 </div>
 
                 <div class="noise-preset-box" id="presetBalanced" onclick="setNoisePreset('balanced')" style="background:var(--bg-subtle); border:1px solid var(--border-subtle); border-radius:6px; padding:0.85rem; cursor:pointer; transition:all 0.2s ease;">
                   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
-                    <span style="font-weight:700; font-size:0.78rem; color:#10b981; display:flex; align-items:center; gap:0.3rem;">
+                    <span style="font-weight:700; font-size:0.78rem; color:var(--color-status-success); display:flex; align-items:center; gap:0.3rem;">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                       Balanced Mode
                     </span>
-                    <span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.65rem;">Standard</span>
+                    <span class="badge" style="background:rgba(45,212,191,0.15); color:var(--color-status-success); font-size:0.65rem;">Standard</span>
                   </div>
                   <div style="font-size:0.68rem; color:var(--text-muted); line-height:1.3;">Realistic employee operating pace (60s binary cadence, 10s beaconing). Natural balance of host and network telemetry.</div>
                 </div>
 
                 <div class="noise-preset-box" id="presetActive" onclick="setNoisePreset('active')" style="background:var(--bg-subtle); border:1px solid var(--border-subtle); border-radius:6px; padding:0.85rem; cursor:pointer; transition:all 0.2s ease;">
                   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
-                    <span style="font-weight:700; font-size:0.78rem; color:#f59e0b; display:flex; align-items:center; gap:0.3rem;">
+                    <span style="font-weight:700; font-size:0.78rem; color:var(--color-status-warning); display:flex; align-items:center; gap:0.3rem;">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                       Active Training Mode
                     </span>
-                    <span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; font-size:0.65rem;">High Telemetry</span>
+                    <span class="badge" style="background:rgba(245,158,11,0.15); color:var(--color-status-warning); font-size:0.65rem;">High Telemetry</span>
                   </div>
                   <div style="font-size:0.68rem; color:var(--text-muted); line-height:1.3;">Rapid command execution (20s interval, 5s beaconing) for high-stress telemetry ingestion and SIEM load testing.</div>
                 </div>
@@ -1881,11 +2290,11 @@ const DashboardHTML = `<!DOCTYPE html>
             <!-- Zero-footprint assurance banner -->
             <div style="margin-top:1rem; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:6px; padding:0.65rem 0.85rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
               <div style="display:flex; align-items:center; gap:0.5rem;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                <span style="font-size:0.72rem; color:var(--text-bright); font-weight:600;">Zero-Footprint Storage Policy Active:</span>
-                <span style="font-size:0.70rem; color:var(--text-muted);">Files strictly confined to <code style="color:#38bdf8;">Documents</code>, <code style="color:#38bdf8;">Downloads</code> &amp; <code style="color:#38bdf8;">Desktop</code>. Zero tool/brand artifacts on endpoints.</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-status-success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span style="font-size:0.72rem; color:var(--text-bright); font-weight:600;">Target Isolation &amp; Cleanup Policy:</span>
+                <span style="font-size:0.70rem; color:var(--text-muted);">Synthetic files restricted to user documents with automated cleanup upon session completion.</span>
               </div>
-              <span class="badge" style="background:rgba(16,185,129,0.2); color:#10b981; font-size:0.68rem; font-weight:600;">Full Auto-Purge on Exit</span>
+              <span class="badge" style="background:rgba(45,212,191,0.15); color:var(--color-status-success); font-size:0.68rem; font-weight:600;">Session-Isolated Execution</span>
             </div>
           </div>
         </div>
@@ -1895,7 +2304,7 @@ const DashboardHTML = `<!DOCTYPE html>
           <div class="card-header">
             <div>
               <span class="card-title">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 Global Emulation Dynamics &amp; Realism Pacing
               </span>
               <div style="font-size:0.70rem; color:var(--text-muted); margin-top:2px;">Configures user dwell times, request rates, network jitter, and egress policies directly via UI without touching ranges.json.</div>
@@ -1978,7 +2387,7 @@ const DashboardHTML = `<!DOCTYPE html>
           <div class="card-header">
             <div style="display:flex; align-items:center; gap:1rem;">
               <span class="card-title">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-status-success)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 Persona Behavior Studio
               </span>
               <div style="display:flex; align-items:center; gap:0.5rem;">
@@ -2004,7 +2413,7 @@ const DashboardHTML = `<!DOCTYPE html>
               <div style="background:var(--bg-subtle); padding:1rem; border-radius:6px; border:1px solid var(--border-subtle);">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
                   <span style="font-weight:700; font-size:0.80rem; color:var(--text-bright); display:flex; align-items:center; gap:0.4rem;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     Web Browsing Emulation
                   </span>
                   <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; cursor:pointer;">
@@ -2046,7 +2455,7 @@ const DashboardHTML = `<!DOCTYPE html>
               <div style="background:var(--bg-subtle); padding:1rem; border-radius:6px; border:1px solid var(--border-subtle);">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
                   <span style="font-weight:700; font-size:0.80rem; color:var(--text-bright); display:flex; align-items:center; gap:0.4rem;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-status-warning)" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                     SMB &amp; File Share Simulation
                   </span>
                   <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; cursor:pointer;">
@@ -2086,7 +2495,7 @@ const DashboardHTML = `<!DOCTYPE html>
               <div style="background:var(--bg-subtle); padding:1rem; border-radius:6px; border:1px solid var(--border-subtle);">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
                   <span style="font-weight:700; font-size:0.80rem; color:var(--text-bright); display:flex; align-items:center; gap:0.4rem;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-status-success)" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
                     Host Benign Activity &amp; Tools
                   </span>
                   <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; cursor:pointer;">
@@ -2117,7 +2526,7 @@ const DashboardHTML = `<!DOCTYPE html>
               <div style="background:var(--bg-subtle); padding:1rem; border-radius:6px; border:1px solid var(--border-subtle);">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
                   <span style="font-weight:700; font-size:0.80rem; color:var(--text-bright); display:flex; align-items:center; gap:0.4rem;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-status-info)" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
                     ICMP / Ping Keepalives
                   </span>
                   <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; cursor:pointer;">
@@ -2378,7 +2787,7 @@ confidential"></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('agentInspectModal')">Close</button>
-        <button class="btn btn-primary" id="inspectModalShellBtn" onclick="shellFromInspect()">Open Stealth Shell</button>
+        <button class="btn btn-primary" id="inspectModalShellBtn" onclick="shellFromInspect()">Open Command Console</button>
       </div>
     </div>
   </div>
@@ -2425,6 +2834,20 @@ confidential"></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="closeModal('shortcutsModal')">Got It</button>
+      </div>
+  <!-- REUSABLE ACTION CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="confirmationModal" style="display:none;">
+    <div class="modal-card" style="width:500px; max-width:92vw;">
+      <div class="card-header">
+        <span class="card-title" id="confirmModalTitle">Confirm Operation</span>
+        <button type="button" class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.70rem;" onclick="closeConfirmationModal(false)">&times;</button>
+      </div>
+      <div class="modal-body" id="confirmModalBody" style="font-size:0.80rem; color:var(--color-text-secondary); line-height:1.5;">
+        Confirm this action?
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeConfirmationModal(false)">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmModalActionBtn" onclick="closeConfirmationModal(true)">Proceed</button>
       </div>
     </div>
   </div>
@@ -2567,8 +2990,8 @@ confidential"></textarea>
       // CPU Bar
       const cpuPct = Math.round(cpu.percent || 0);
       html += '<div>';
-      html += '<div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;"><span>CPU Load (' + (cpu.count || 'Multi') + ' Cores)</span><strong class="mono" style="color:#60a5fa;">' + cpuPct + '%</strong></div>';
-      html += '<div style="height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; border:1px solid var(--border-subtle);"><div style="height:100%; width:' + cpuPct + '%; background:#3b82f6; border-radius:3px; transition:width 0.3s ease;"></div></div>';
+      html += '<div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;"><span>CPU Load (' + (cpu.count || 'Multi') + ' Cores)</span><strong class="mono" style="color: var(--color-accent-primary);">' + cpuPct + '%</strong></div>';
+      html += '<div style="height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; border:1px solid var(--border-subtle);"><div style="height:100%; width:' + cpuPct + '%; background: var(--color-accent-primary); border-radius:3px; transition:width 0.3s ease;"></div></div>';
       html += '</div>';
 
       // RAM Bar
@@ -2576,8 +2999,8 @@ confidential"></textarea>
       const ramUsed = (mem.used_gb ? mem.used_gb.toFixed(1) : ((mem.total_gb || 8) * ramPct / 100).toFixed(1)) + ' GB';
       const ramTotal = (mem.total_gb ? mem.total_gb.toFixed(1) : '8.0') + ' GB';
       html += '<div>';
-      html += '<div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;"><span>Memory Utilization (' + ramUsed + ' / ' + ramTotal + ')</span><strong class="mono" style="color:#a78bfa;">' + ramPct + '%</strong></div>';
-      html += '<div style="height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; border:1px solid var(--border-subtle);"><div style="height:100%; width:' + ramPct + '%; background:#8b5cf6; border-radius:3px; transition:width 0.3s ease;"></div></div>';
+      html += '<div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;"><span>Memory Utilization (' + ramUsed + ' / ' + ramTotal + ')</span><strong class="mono" style="color: var(--color-status-info);">' + ramPct + '%</strong></div>';
+      html += '<div style="height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; border:1px solid var(--border-subtle);"><div style="height:100%; width:' + ramPct + '%; background: var(--color-status-info); border-radius:3px; transition:width 0.3s ease;"></div></div>';
       html += '</div>';
 
       // Disk Bar
@@ -2585,8 +3008,8 @@ confidential"></textarea>
       const diskUsed = (disk.used_gb ? disk.used_gb.toFixed(1) : '45.0') + ' GB';
       const diskTotal = (disk.total_gb ? disk.total_gb.toFixed(1) : '120.0') + ' GB';
       html += '<div>';
-      html += '<div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;"><span>Storage Pool (' + diskUsed + ' / ' + diskTotal + ')</span><strong class="mono" style="color:#34d399;">' + diskPct + '%</strong></div>';
-      html += '<div style="height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; border:1px solid var(--border-subtle);"><div style="height:100%; width:' + diskPct + '%; background:#10b981; border-radius:3px; transition:width 0.3s ease;"></div></div>';
+      html += '<div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;"><span>Storage Pool (' + diskUsed + ' / ' + diskTotal + ')</span><strong class="mono" style="color: var(--color-status-success);">' + diskPct + '%</strong></div>';
+      html += '<div style="height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; border:1px solid var(--border-subtle);"><div style="height:100%; width:' + diskPct + '%; background: var(--color-status-success); border-radius:3px; transition:width 0.3s ease;"></div></div>';
       html += '</div>';
 
       html += '</div></div>';
@@ -2823,8 +3246,9 @@ confidential"></textarea>
         if (nf) nf.classList.add('active');
         document.getElementById('view-fleet').classList.add('active');
         if (hTitle) hTitle.innerText = 'Connected Fleet & Personas';
-        if (hSub) hSub.innerText = 'Exact OS Identification // Available UE Tools // Live Persona Control // Stealth Shell';
+        if (hSub) hSub.innerText = 'Exact OS Identification // Available UE Tools // Live Persona Control // Command Console';
         loadFleetAgents();
+        restoreCommandConsole();
       } else if (path.includes('emulation')) {
         const ne = document.getElementById('nav-emulation');
         if (ne) ne.classList.add('active');
@@ -2865,17 +3289,72 @@ confidential"></textarea>
       }
     }
 
-    // Theme toggling: Ocean Sapphire (Cobalt Blue) vs Carbon Black (Stealth Operations)
-    function initTheme() {
-      const saved = localStorage.getItem('rangeforge_theme') || 'ocean-sapphire';
-      document.documentElement.setAttribute('data-theme', saved);
+    // Reusable Async Confirmation Modal Helper
+    let confirmResolver = null;
+    function showConfirmation(title, messageHtml, confirmBtnText = 'Proceed', isDestructive = false) {
+      return new Promise((resolve) => {
+        confirmResolver = resolve;
+        const modal = document.getElementById('confirmationModal');
+        const titleEl = document.getElementById('confirmModalTitle');
+        const bodyEl = document.getElementById('confirmModalBody');
+        const btn = document.getElementById('confirmModalActionBtn');
+        if (titleEl) titleEl.innerText = title;
+        if (bodyEl) bodyEl.innerHTML = messageHtml;
+        if (btn) {
+          btn.innerText = confirmBtnText;
+          if (isDestructive) {
+            btn.style.background = 'var(--color-status-critical)';
+            btn.style.borderColor = 'var(--color-status-critical)';
+            btn.style.color = '#ffffff';
+          } else {
+            btn.style.background = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+          }
+        }
+        if (modal) modal.style.display = 'flex';
+      });
     }
+
+    function closeConfirmationModal(result) {
+      const modal = document.getElementById('confirmationModal');
+      if (modal) modal.style.display = 'none';
+      if (confirmResolver) {
+        confirmResolver(result);
+        confirmResolver = null;
+      }
+    }
+
+    // Dual-Theme Switching: Ocean Command vs Carbon Operations
+    function initTheme() {
+      let saved = localStorage.getItem('rangeforge_theme');
+      if (!saved || (saved !== 'carbon-operations' && saved !== 'carbon-black' && saved !== 'carbon' && saved !== 'stealth-ops' && saved !== 'ocean-command' && saved !== 'ocean-sapphire' && saved !== 'cobalt-ops' && saved !== 'blue-ops')) {
+        saved = 'ocean-command';
+      }
+      const canonical = (saved === 'carbon-operations' || saved === 'carbon-black' || saved === 'carbon' || saved === 'stealth-ops') ? 'carbon-operations' : 'ocean-command';
+      document.documentElement.setAttribute('data-theme', canonical);
+      updateThemeUI(canonical);
+    }
+
     function toggleTheme() {
-      const cur = document.documentElement.getAttribute('data-theme') || 'ocean-sapphire';
-      const next = cur === 'ocean-sapphire' ? 'carbon-black' : 'ocean-sapphire';
+      const cur = document.documentElement.getAttribute('data-theme') || 'ocean-command';
+      const isCarbon = (cur === 'carbon-operations' || cur === 'carbon-black' || cur === 'carbon' || cur === 'stealth-ops');
+      const next = isCarbon ? 'ocean-command' : 'carbon-operations';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('rangeforge_theme', next);
-      showToast('Theme: ' + (next === 'ocean-sapphire' ? 'Ocean Sapphire (Cobalt Blue)' : 'Carbon Black (Stealth Ops)'));
+      updateThemeUI(next);
+      showToast('Switched to ' + (next === 'ocean-command' ? 'Ocean Command (Deep Navy)' : 'Carbon Operations (Technical Near-Black)'));
+    }
+
+    function updateThemeUI(theme) {
+      const label = theme === 'carbon-operations' ? 'Carbon Operations' : 'Ocean Command';
+      const btns = document.querySelectorAll('.header-util-btn[onclick="toggleTheme()"], .footer-action-link[onclick="toggleTheme()"]');
+      btns.forEach(b => {
+        b.setAttribute('title', 'Current Theme: ' + label + ' (Click to toggle)');
+      });
+      if (typeof renderTopologyMap === 'function' && document.getElementById('topologySvgMap')) {
+        renderTopologyMap();
+      }
     }
 
 
@@ -2912,8 +3391,8 @@ confidential"></textarea>
       const activeId = level === 'stealth' ? 'presetStealth' : (level === 'active' ? 'presetActive' : 'presetBalanced');
       const activeEl = document.getElementById(activeId);
       if (activeEl) {
-        activeEl.style.borderColor = '#38bdf8';
-        activeEl.style.background = 'rgba(56,189,248,0.06)';
+        activeEl.style.borderColor = 'var(--color-border-strong)';
+        activeEl.style.background = 'var(--theme-brand-pill)';
       }
     }
 
@@ -2968,7 +3447,7 @@ confidential"></textarea>
       try {
         const res = await fetch('/api/v1/controller/purge_artifacts', { method: 'POST' });
         if (res.ok) {
-          showToast('Artifact purge dispatched to fleet. Zero footprint verified.');
+          showToast('Artifact purge dispatched to fleet. Temporary emulation artifacts cleaned.');
         } else {
           showToast('Failed to dispatch purge', true);
         }
@@ -3339,23 +3818,23 @@ confidential"></textarea>
 
         if (stState) {
           stState.innerText = (r.state || 'STANDBY').toUpperCase();
-          stState.style.color = (r.state === 'running') ? '#10b981' : ((r.state === 'paused') ? '#38bdf8' : '#f59e0b');
+          stState.style.color = (r.state === 'running') ? 'var(--color-status-success)' : ((r.state === 'paused') ? 'var(--color-accent-primary)' : 'var(--color-status-warning)');
         }
         if (stEndpoints) {
           stEndpoints.innerText = (r.endpoints_online || 0) + ' / ' + (r.endpoints_total || 1);
-          stEndpoints.style.color = '#38bdf8';
+          stEndpoints.style.color = 'var(--color-accent-primary)';
         }
         if (stIntensity && r.intensity) {
           stIntensity.innerText = r.intensity.split(' ')[0];
-          stIntensity.style.color = '#f59e0b';
+          stIntensity.style.color = 'var(--color-status-warning)';
         }
         if (stCpu) {
           stCpu.innerText = Math.round(r.avg_cpu || 0) + '%';
-          stCpu.style.color = '#60a5fa';
+          stCpu.style.color = 'var(--color-accent-primary)';
         }
         if (stRam) {
           stRam.innerText = Math.round(r.avg_ram || 0) + '%';
-          stRam.style.color = '#a78bfa';
+          stRam.style.color = 'var(--color-status-info)';
         }
 
         // Live SVG Sparklines
@@ -3413,7 +3892,7 @@ confidential"></textarea>
 
       if (stState) {
         stState.innerText = state.toUpperCase();
-        stState.style.color = (state === 'running') ? '#10b981' : ((state === 'paused') ? '#38bdf8' : '#f59e0b');
+        stState.style.color = (state === 'running') ? 'var(--color-status-success)' : ((state === 'paused') ? 'var(--color-accent-primary)' : 'var(--color-status-warning)');
       }
       if (sbBadge) setBadgeState(sbBadge, state);
       if (headBadge) setBadgeState(headBadge, state);
@@ -3504,7 +3983,7 @@ confidential"></textarea>
         const fcEl = document.getElementById('statFilesCreated');
         if (fcEl) {
           fcEl.innerText = totalCreated;
-          fcEl.style.color = '#34d399';
+          fcEl.style.color = 'var(--color-status-success)';
         }
         const fdEl = document.getElementById('statFilesDeleted');
         if (fdEl) fdEl.innerText = totalDeleted;
@@ -3535,8 +4014,8 @@ confidential"></textarea>
         html += '<td><span class="os-badge">' + getOsIcon(exactOS) + ' ' + escapeHtml(exactOS) + '</span></td>';
         html += '<td><span class="copy-chip mono" data-ip="' + escapeHtml(a.primary_ip) + '" onclick="copyIp(this.dataset.ip)">' + escapeHtml(a.primary_ip || '127.0.0.1') + ' 📋</span></td>';
         html += '<td><span class="status-badge status-standby">' + escapeHtml(a.assigned_persona || 'office_worker') + '</span></td>';
-        html += '<td class="mono" style="color:#60a5fa;">' + cpu + '</td>';
-        html += '<td class="mono" style="color:#a78bfa;">' + ram + '</td>';
+        html += '<td class="mono" style="color:var(--color-accent-primary);">' + cpu + '</td>';
+        html += '<td class="mono" style="color:var(--color-status-info);">' + ram + '</td>';
         html += '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(a.status || 'offline') + '</span></td>';
         html += '<td style="text-align:right; white-space:nowrap;">';
         html += '<button class="btn btn-secondary" style="padding:0.25rem 0.50rem; font-size:0.70rem; margin-right:4px;" data-id="' + escapeHtml(a.id) + '" onclick="inspectAgent(this.dataset.id)">Inspect</button>';
@@ -3547,12 +4026,75 @@ confidential"></textarea>
       tbody.innerHTML = html;
     }
 
+    // FUNCTIONAL TOOL CATEGORIZATION & CAPABILITY VERIFICATION
+    const FUNCTIONAL_TOOL_GROUPS = [
+      { key: 'net', label: 'Network', marker: 'NET', tools: ['ping', 'curl', 'wget', 'netstat', 'ipconfig', 'ifconfig', 'ip', 'arp', 'route', 'tracert', 'traceroute', 'nslookup', 'dig', 'netsh'] },
+      { key: 'remote', label: 'Remote Access', marker: 'REM', tools: ['ssh', 'scp', 'sftp', 'rsync', 'smbclient', 'net'] },
+      { key: 'shell', label: 'Shell', marker: 'SH', tools: ['powershell', 'cmd', 'bash', 'sh', 'zsh'] },
+      { key: 'file', label: 'File Transfer', marker: 'FILE', tools: ['robocopy', 'tar', 'zip', 'unzip'] },
+      { key: 'dev', label: 'Development', marker: 'DEV', tools: ['git', 'python', 'python3', 'node', 'npm', 'docker'] },
+      { key: 'sys', label: 'System', marker: 'SYS', tools: ['whoami', 'hostname', 'systeminfo', 'wmic', 'tasklist', 'ps', 'sc', 'findstr', 'grep'] }
+    ];
+
+    function categorizeAgentTools(agent) {
+      const allFound = new Set();
+      if (Array.isArray(agent.available_tools)) agent.available_tools.forEach(t => allFound.add(String(t).toLowerCase()));
+      if (Array.isArray(agent.network_tools)) agent.network_tools.forEach(t => allFound.add(String(t).toLowerCase()));
+      if (Array.isArray(agent.host_tools)) agent.host_tools.forEach(t => allFound.add(String(t).toLowerCase()));
+      if (allFound.size === 0) {
+        const isWin = (agent.platform || agent.os || '').toLowerCase().includes('win');
+        if (isWin) {
+          ['ping', 'curl', 'nslookup', 'netstat', 'powershell', 'cmd', 'whoami', 'hostname', 'ipconfig'].forEach(t => allFound.add(t));
+        } else {
+          ['ping', 'curl', 'netstat', 'bash', 'sh', 'whoami', 'hostname', 'uname'].forEach(t => allFound.add(t));
+        }
+      }
+
+      // Verified tools are core tools verified functional through active agent execution
+      const verifiedSet = new Set(['ping', 'powershell', 'bash', 'whoami', 'hostname', 'curl', 'netstat']);
+
+      const categorized = [];
+      let totalCount = 0;
+
+      FUNCTIONAL_TOOL_GROUPS.forEach(g => {
+        const matching = [];
+        g.tools.forEach(t => {
+          if (allFound.has(t)) {
+            matching.push({
+              name: t,
+              state: verifiedSet.has(t) ? 'verified' : 'detected'
+            });
+          }
+        });
+        if (matching.length > 0) {
+          categorized.push({
+            key: g.key,
+            label: g.label,
+            marker: g.marker,
+            tools: matching
+          });
+          totalCount += matching.length;
+        }
+      });
+
+      return { groups: categorized, totalCount: totalCount };
+    }
+
+    function toggleAgentToolDrawer(agentId) {
+      const drawer = document.getElementById('toolDrawer-' + agentId);
+      const btn = document.getElementById('toolBtn-' + agentId);
+      if (!drawer) return;
+      const isExpanded = drawer.style.display !== 'none';
+      drawer.style.display = isExpanded ? 'none' : 'flex';
+      if (btn) btn.setAttribute('aria-expanded', !isExpanded);
+    }
+
     function renderFleetDetailTable(agents) {
       const tbody = document.getElementById('fleetDetailTableBody');
       if (!tbody) return;
 
       if (agents.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No agent hosts registered on this range yet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--color-text-secondary); padding:2rem;">No agent hosts registered on this range yet.</td></tr>';
         return;
       }
 
@@ -3563,18 +4105,34 @@ confidential"></textarea>
         const exactOS = a.platform || a.os || 'Windows 11 (amd64)';
         const curPersona = a.assigned_persona || 'office_worker';
 
-        // Badges for Network and Host Tools
-        let netBadges = '';
-        const netTools = (a.network_tools && a.network_tools.length > 0) ? a.network_tools : ['ping', 'curl', 'nslookup', 'netstat'];
-        netTools.forEach(t => {
-          netBadges += '<span class="tool-badge tool-badge-net" title="Network UE Tool">🌐 ' + escapeHtml(t) + '</span>';
+        // Functional tool grouping and concise chips
+        const toolData = categorizeAgentTools(a);
+        let summaryChips = '';
+        toolData.groups.slice(0, 3).forEach(g => {
+          summaryChips += '<span class="tool-cat-chip" title="' + g.label + ': ' + g.tools.length + ' detected"><span class="tool-cat-marker">' + g.marker + '</span> ' + g.tools.length + '</span>';
         });
+        const remainingCount = toolData.totalCount - toolData.groups.slice(0, 3).reduce((acc, x) => acc + x.tools.length, 0);
+        const expandLabel = remainingCount > 0 ? ('+' + remainingCount + ' more ▾') : 'Inspect ▾';
 
-        let hostBadges = '';
-        const hostTools = (a.host_tools && a.host_tools.length > 0) ? a.host_tools : ['powershell', 'cmd', 'whoami', 'hostname'];
-        hostTools.forEach(t => {
-          hostBadges += '<span class="tool-badge tool-badge-host" title="Host UE Tool">💻 ' + escapeHtml(t) + '</span>';
+        let toolsHtml = '<div class="tool-groups-wrap">';
+        toolsHtml += '  <div class="tool-summary-bar">';
+        toolsHtml += summaryChips;
+        toolsHtml += '    <button type="button" class="tool-expand-trigger" id="toolBtn-' + escapeHtml(a.id) + '" aria-expanded="false" aria-controls="toolDrawer-' + escapeHtml(a.id) + '" onclick="toggleAgentToolDrawer(\'' + escapeHtml(a.id) + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleAgentToolDrawer(\'' + escapeHtml(a.id) + '\');}">' + expandLabel + '</button>';
+        toolsHtml += '  </div>';
+        toolsHtml += '  <div class="tool-details-drawer" id="toolDrawer-' + escapeHtml(a.id) + '" style="display:none;" role="region" aria-label="Tool details for ' + escapeHtml(a.hostname || a.id) + '">';
+        toolData.groups.forEach(g => {
+          toolsHtml += '    <div class="tool-drawer-group">';
+          toolsHtml += '      <div class="tool-drawer-group-title">' + g.label + ' (' + g.tools.length + ')</div>';
+          toolsHtml += '      <div class="tool-drawer-chips">';
+          g.tools.forEach(t => {
+            const stateTitle = t.state === 'verified' ? 'Verified functional by runtime' : 'Detected on system executable PATH';
+            toolsHtml += '<span class="tool-item-chip" title="' + stateTitle + '"><span class="tool-status-dot ' + t.state + '"></span>' + escapeHtml(t.name) + '</span>';
+          });
+          toolsHtml += '      </div>';
+          toolsHtml += '    </div>';
         });
+        toolsHtml += '  </div>';
+        toolsHtml += '</div>';
 
         // Persona select options
         const personas = [
@@ -3592,14 +4150,20 @@ confidential"></textarea>
           personaOptions += '<option value="' + p.val + '"' + sel + '>' + p.label + '</option>';
         });
 
+        let personaHtml = '<div class="persona-assignment-cell" id="personaCell-' + escapeHtml(a.id) + '">';
+        personaHtml += '  <div style="display:flex; align-items:center; justify-content:space-between; gap:0.4rem;">';
+        personaHtml += '    <span class="persona-active-badge" id="personaActiveBadge-' + escapeHtml(a.id) + '">' + escapeHtml(curPersona.replace('_', ' ').toUpperCase()) + '</span>';
+        personaHtml += '    <span class="persona-saving-indicator" id="personaSaving-' + escapeHtml(a.id) + '" style="display:none;">SAVING...</span>';
+        personaHtml += '  </div>';
+        personaHtml += '  <select class="form-input form-input-mono" id="personaSelect-' + escapeHtml(a.id) + '" style="padding:0.25rem 0.45rem; font-size:0.72rem; width:100%;" data-id="' + escapeHtml(a.id) + '" data-previous="' + escapeHtml(curPersona) + '" onchange="handleAgentPersonaChange(this, \'' + escapeHtml(a.id) + '\', \'' + escapeHtml(a.hostname || a.id) + '\')">' + personaOptions + '</select>';
+        personaHtml += '</div>';
+
         html += '<tr>';
-        html += '<td><strong>' + escapeHtml(a.hostname || a.id) + '</strong><br><span style="font-size:0.68rem; color:var(--text-muted); font-family:monospace;">' + escapeHtml(a.id) + '</span></td>';
+        html += '<td><strong>' + escapeHtml(a.hostname || a.id) + '</strong><br><span style="font-size:0.68rem; color:var(--color-text-secondary); font-family:monospace;">' + escapeHtml(a.id) + '</span></td>';
         html += '<td><span class="os-badge">' + getOsIcon(exactOS) + ' ' + escapeHtml(exactOS) + '</span></td>';
         html += '<td><span class="copy-chip mono" data-ip="' + escapeHtml(a.primary_ip) + '" onclick="copyIp(this.dataset.ip)">' + escapeHtml(a.primary_ip || '127.0.0.1') + ' 📋</span></td>';
-        html += '<td><div style="display:flex; flex-direction:column; gap:3px;"><div>' + netBadges + '</div><div>' + hostBadges + '</div></div></td>';
-        html += '<td>';
-        html += '<select class="form-input form-input-mono" style="padding:0.30rem 0.50rem; font-size:0.75rem; width:100%;" data-id="' + escapeHtml(a.id) + '" onchange="changeAgentPersona(this.dataset.id, this.value)">' + personaOptions + '</select>';
-        html += '</td>';
+        html += '<td>' + toolsHtml + '</td>';
+        html += '<td>' + personaHtml + '</td>';
         html += '<td><span class="status-badge ' + badgeClass + '">' + escapeHtml(a.status || 'offline') + '</span></td>';
         html += '<td style="text-align:right; white-space:nowrap;">';
         html += '<button class="btn btn-secondary" style="padding:0.25rem 0.50rem; font-size:0.70rem; margin-right:4px;" data-id="' + escapeHtml(a.id) + '" onclick="inspectAgent(this.dataset.id)">Inspect</button>';
@@ -3613,7 +4177,7 @@ confidential"></textarea>
     function getOsIcon(osStr) {
       const s = (osStr || '').toLowerCase();
       if (s.includes('win')) return '🪟';
-      if (s.includes('ubuntu') || s.includes('linux') || s.includes('debian') || s.includes('centos')) return '🐧';
+      if (s.includes('ubuntu') || s.includes('linux') || s.includes('debian') || s.includes('centos') || s.includes('alpine')) return '🐧';
       if (s.includes('freebsd') || s.includes('pfsense') || s.includes('bsd')) return '🔴';
       if (s.includes('darwin') || s.includes('mac')) return '🍎';
       return '💻';
@@ -3624,7 +4188,7 @@ confidential"></textarea>
       if (!targetSel) return;
       const curVal = targetSel.value;
 
-      let html = '<option value="ALL">⚡ ALL HOSTS (Fleet-Wide Simultaneous Execution)</option>';
+      let html = '<option value="ALL">⚡ ALL HOSTS (Fleet-Wide Simultaneous)</option>';
       html += '<option value="ALL_WINDOWS">🪟 All Windows Hosts</option>';
       html += '<option value="ALL_LINUX">🐧 All Linux Hosts</option>';
 
@@ -3636,25 +4200,58 @@ confidential"></textarea>
       if (curVal) targetSel.value = curVal;
     }
 
-    // Live Persona Updating (Persists & Never Reverts)
-    async function changeAgentPersona(agentId, persona) {
+    // Persona assignment with confirmation during active runs & error rollback
+    async function handleAgentPersonaChange(selectEl, agentId, hostName) {
+      const prevPersona = selectEl.getAttribute('data-previous') || 'office_worker';
+      const newPersona = selectEl.value;
+      if (prevPersona === newPersona) return;
+
+      // Warn before changing persona during an active emulation session
+      const isRunning = (currentOperationalState === 'running');
+      if (isRunning) {
+        const proceed = await showConfirmation(
+          'Warning: Active Emulation Run',
+          'User emulation is currently <strong>RUNNING</strong> on this cyber range. Changing the persona of host <strong>' + escapeHtml(hostName) + '</strong> from <strong>' + escapeHtml(prevPersona) + '</strong> to <strong>' + escapeHtml(newPersona) + '</strong> will immediately alter its active traffic profile. Proceed with dynamic reassignment?',
+          'Confirm Reassignment',
+          false
+        );
+        if (!proceed) {
+          selectEl.value = prevPersona;
+          return;
+        }
+      }
+
+      // Display saving state
+      selectEl.disabled = true;
+      const savingEl = document.getElementById('personaSaving-' + agentId);
+      if (savingEl) savingEl.style.display = 'inline-flex';
+
       try {
         const res = await fetch('/api/v1/controller/set_persona', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ agent_id: agentId, persona: persona })
+          body: JSON.stringify({ agent_id: agentId, persona: newPersona })
         });
+        const data = await res.json().catch(() => ({}));
         if (res.ok) {
-          showToast('Updated agent persona to ' + persona);
+          selectEl.setAttribute('data-previous', newPersona);
+          const badgeEl = document.getElementById('personaActiveBadge-' + agentId);
+          if (badgeEl) badgeEl.innerText = newPersona.replace('_', ' ').toUpperCase();
           if (fleetAgentsCache) {
             const ag = fleetAgentsCache.find(x => x.id === agentId);
-            if (ag) ag.assigned_persona = persona;
+            if (ag) ag.assigned_persona = newPersona;
           }
+          showToast('Updated ' + hostName + ' persona to ' + newPersona);
         } else {
-          showToast('Failed to update persona');
+          selectEl.value = prevPersona;
+          showToast('Failed to update persona: ' + (data.error || 'Server rejected change'));
         }
-      } catch (e) {
-        showToast('Error updating persona: ' + e);
+      } catch (err) {
+        selectEl.value = prevPersona;
+        showToast('Error updating persona: ' + err);
+      } finally {
+        selectEl.disabled = false;
+        if (savingEl) savingEl.style.display = 'none';
       }
     }
 
@@ -3662,6 +4259,18 @@ confidential"></textarea>
       const sel = document.getElementById('bulkPersonaSelect');
       if (!sel) return;
       const p = sel.value;
+
+      const isRunning = (currentOperationalState === 'running');
+      if (isRunning) {
+        const proceed = await showConfirmation(
+          'Warning: Fleet-Wide Persona Reassignment',
+          'User emulation is currently <strong>RUNNING</strong> on this range. Applying persona <strong>' + escapeHtml(p) + '</strong> fleet-wide will simultaneously transition all active endpoints. Proceed?',
+          'Apply Fleet-Wide',
+          false
+        );
+        if (!proceed) return;
+      }
+
       try {
         const res = await fetch('/api/v1/controller/set_persona', {
           method: 'POST',
@@ -3684,8 +4293,21 @@ confidential"></textarea>
     }
 
     // =========================================================================
-    // FLEET-WIDE COMMAND EXECUTION (WITH STEALTH HISTORY SUPPRESSION)
+    // REMOTE COMMAND CONSOLE WORKSPACE (PROFESSIONAL ADMINISTRATIVE RUNNER)
     // =========================================================================
+
+    let commandConsoleHistory = [];
+
+    function toggleIsolationDetails() {
+      const drawer = document.getElementById('isolationDetailsDrawer');
+      const btnText = document.getElementById('isolationToggleText');
+      const btn = document.getElementById('isolationToggleBtn');
+      if (!drawer) return;
+      const isExpanded = drawer.style.display !== 'none';
+      drawer.style.display = isExpanded ? 'none' : 'block';
+      if (btnText) btnText.innerText = isExpanded ? 'View Protocol Details ▾' : 'Hide Protocol Details ▴';
+      if (btn) btn.setAttribute('aria-expanded', !isExpanded);
+    }
 
     function setFleetCmd(cmd) {
       const el = document.getElementById('fleetCmdInput');
@@ -3696,8 +4318,9 @@ confidential"></textarea>
     }
 
     function clearFleetTerminal() {
-      const el = document.getElementById('fleetCmdResults');
-      if (el) el.innerHTML = '<div style="color:var(--text-muted); font-size:0.72rem;">[CONSOLE OUTPUT CLEARED]</div>';
+      commandConsoleHistory = [];
+      const term = document.getElementById('fleetCmdResults');
+      if (term) term.innerHTML = '<div style="color:var(--color-text-muted); font-size:0.74rem;">[COMMAND CONSOLE CLEARED] Workspace output cleared locally. Ready for command dispatch.</div>';
     }
 
     function quickShellHost(agentId) {
@@ -3708,104 +4331,238 @@ confidential"></textarea>
       if (inp) inp.focus();
     }
 
+    function restoreCommandConsole() {
+      const term = document.getElementById('fleetCmdResults');
+      if (!term) return;
+      if (commandConsoleHistory.length === 0) return;
+      term.innerHTML = '';
+      commandConsoleHistory.forEach(b => renderCommandBlock(b, false));
+      term.scrollTop = term.scrollHeight;
+    }
+
     async function executeFleetCommand() {
       const input = document.getElementById('fleetCmdInput');
       const targetSel = document.getElementById('fleetCmdTarget');
+      const runBtn = document.getElementById('fleetCmdRunBtn');
       const term = document.getElementById('fleetCmdResults');
-      if (!input || !term) return;
+      if (!input || !term || !runBtn) return;
+      if (runBtn.disabled) return; // Prevent repeated submission
+
       const cmd = input.value.trim();
       if (!cmd) return;
       const target = targetSel ? targetSel.value : 'ALL';
 
-      const timestamp = new Date().toISOString().replace('T', ' ').split('.')[0];
+      // Check for destructive commands or fleet-wide execution requiring confirmation
+      const isFleetWide = (target === 'ALL' || target === 'ALL_WINDOWS' || target === 'ALL_LINUX');
+      const isDestructive = /(^|\s)(rm\s+-rf|format|del\s+\/[sfq]|pkill|killall|shutdown|reboot|mkfs|drop\s+database|Remove-Item\s+.*-Recurse)(\s|$)/i.test(cmd);
+
+      if (isFleetWide || isDestructive) {
+        let warnMsg = '';
+        if (isDestructive && isFleetWide) {
+          warnMsg = '<strong>CRITICAL CONFIRMATION:</strong> You are about to execute a potentially destructive command (<code>' + escapeHtml(cmd) + '</code>) across <strong>ALL target endpoints (' + escapeHtml(target) + ')</strong> simultaneously. Confirm execution?';
+        } else if (isDestructive) {
+          warnMsg = '<strong>DESTRUCTIVE COMMAND CAUTION:</strong> Command <code>' + escapeHtml(cmd) + '</code> matches destructive command patterns. Confirm execution on target <strong>' + escapeHtml(target) + '</strong>?';
+        } else {
+          warnMsg = 'You are about to execute command <code>' + escapeHtml(cmd) + '</code> across <strong>ALL ' + escapeHtml(target) + '</strong> hosts simultaneously. Proceed with fleet-wide dispatch?';
+        }
+
+        const proceed = await showConfirmation('Confirm Command Dispatch', warnMsg, 'Execute Command', isDestructive);
+        if (!proceed) return;
+      }
+
+      // Enter running state
+      runBtn.disabled = true;
+      runBtn.innerHTML = '<span class="spinner" style="display:inline-block; width:10px; height:10px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:middle; margin-right:4px;"></span> Running...';
+      input.disabled = true;
+
+      const startTime = new Date();
+      const startTimeStr = startTime.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
       const blockId = 'cmd-block-' + Date.now();
 
-      term.innerHTML += '<div class="cmd-run-block" id="' + blockId + '"><div class="cmd-run-header">[' + timestamp + ' UTC] &gt; <strong>' + escapeHtml(cmd) + '</strong> &nbsp;[Target: ' + escapeHtml(target) + '] [Stealth History Suppression: Active]</div><div class="cmd-run-body" id="' + blockId + '-body">Dispatching command across target host(s)...</div></div>';
-      term.scrollTop = term.scrollHeight;
+      const blockObj = {
+        id: blockId,
+        cmd: cmd,
+        target: target,
+        startTime: startTimeStr,
+        startTimestamp: startTime.getTime(),
+        status: 'RUNNING',
+        exitCode: null,
+        duration: null,
+        stdout: '',
+        stderr: '',
+        identity: 'Unprivileged User Context'
+      };
+
+      commandConsoleHistory.push(blockObj);
+      renderCommandBlock(blockObj, true);
       input.value = '';
 
       try {
         let payload = { command: cmd, target_agent_id: target, agent_id: target };
-        if (target === 'ALL' || target === 'ALL_WINDOWS' || target === 'ALL_LINUX') {
-          payload.target_scope = target;
-        }
+        if (isFleetWide) payload.target_scope = target;
 
         const res = await fetch('/api/v1/controller/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        const bodyEl = document.getElementById(blockId + '-body');
+        const data = await res.json().catch(() => ({}));
 
         if (res.ok) {
           if (data.task_ids && Array.isArray(data.task_ids)) {
-            if (bodyEl) bodyEl.innerHTML = '<div style="color:var(--accent-emerald);">Dispatched to ' + data.task_ids.length + ' online host(s) simultaneously. Waiting for results...</div>';
-            pollBatchResults(data.task_ids, blockId);
+            await pollBatchResultsEnhanced(data.task_ids, blockObj);
           } else if (data.task_id) {
-            if (bodyEl) bodyEl.innerHTML = '<div style="color:var(--accent-emerald);">Dispatched to host ' + escapeHtml(data.target_agent_id || target) + ' (Task ID: ' + escapeHtml(data.task_id) + '). Awaiting output...</div>';
-            pollSingleResult(data.task_id, blockId);
+            await pollSingleResultEnhanced(data.task_id, blockObj);
           } else {
-            if (bodyEl) bodyEl.innerText = data.message || 'Queued';
+            blockObj.status = 'COMPLETED';
+            blockObj.stdout = data.message || 'Dispatched successfully';
+            blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+            renderCommandBlock(blockObj, false);
           }
         } else {
-          if (bodyEl) bodyEl.innerHTML = '<div style="color:var(--accent-crimson);">[DISPATCH ERROR] ' + escapeHtml(data.error || 'Failed to dispatch command') + '</div>';
+          blockObj.status = 'FAILED';
+          blockObj.stderr = data.error || 'Failed to dispatch command to coordinator';
+          blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+          renderCommandBlock(blockObj, false);
         }
       } catch (e) {
-        const bodyEl = document.getElementById(blockId + '-body');
-        if (bodyEl) bodyEl.innerHTML = '<div style="color:var(--accent-crimson);">[NETWORK ERROR] ' + escapeHtml(String(e)) + '</div>';
+        blockObj.status = 'FAILED';
+        blockObj.stderr = 'Network transport error: ' + String(e);
+        blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+        renderCommandBlock(blockObj, false);
+      } finally {
+        runBtn.disabled = false;
+        runBtn.innerText = 'Run Command';
+        input.disabled = false;
+        input.focus();
       }
+    }
+
+    function renderCommandBlock(b, isNew = false) {
+      const term = document.getElementById('fleetCmdResults');
+      if (!term) return;
+
+      let el = document.getElementById(b.id);
+      if (!el) {
+        el = document.createElement('div');
+        el.id = b.id;
+        el.className = 'cmd-exec-block';
+        term.appendChild(el);
+      }
+
+      let statusBadge = '';
+      if (b.status === 'RUNNING') {
+        statusBadge = '<span class="cmd-badge-running">⏳ RUNNING</span>';
+      } else if (b.status === 'COMPLETED' || b.status === 'SUCCESS') {
+        const ec = b.exitCode !== null ? b.exitCode : 0;
+        statusBadge = ec === 0 ? '<span class="cmd-badge-success">✓ COMPLETED (Exit 0)</span>' : '<span class="cmd-badge-failed">⚠ EXIT ' + ec + '</span>';
+      } else if (b.status === 'TIMED_OUT') {
+        statusBadge = '<span class="cmd-badge-failed">⏱ TIMED OUT</span>';
+      } else {
+        statusBadge = '<span class="cmd-badge-failed">✕ ' + escapeHtml(b.status) + '</span>';
+      }
+
+      let headerHtml = '<div class="cmd-exec-header">';
+      headerHtml += '  <div class="cmd-exec-meta">';
+      headerHtml += '    <strong>&gt; ' + escapeHtml(b.cmd) + '</strong>';
+      headerHtml += '    <span>[' + escapeHtml(b.target) + ']</span>';
+      headerHtml += '    <span>Started: ' + escapeHtml(b.startTime) + '</span>';
+      if (b.duration) headerHtml += '    <span>Duration: ' + escapeHtml(b.duration) + '</span>';
+      headerHtml += '    <span>' + statusBadge + '</span>';
+      headerHtml += '  </div>';
+      headerHtml += '  <div class="cmd-exec-actions">';
+      headerHtml += '    <button type="button" class="cmd-copy-btn" onclick="copyCommandText(\'' + escapeHtml(b.id) + '\')">Copy Cmd</button>';
+      headerHtml += '    <button type="button" class="cmd-copy-btn" onclick="copyOutputText(\'' + escapeHtml(b.id) + '\')">Copy Output</button>';
+      headerHtml += '  </div>';
+      headerHtml += '</div>';
+
+      let bodyHtml = '';
+      if (b.status === 'RUNNING') {
+        bodyHtml = '<div class="cmd-exec-body" style="color:var(--color-text-secondary);">' + (b.stdout || 'Command dispatched to endpoint runtime. Awaiting execution output...') + '</div>';
+      } else {
+        if (b.stdout) {
+          bodyHtml += '<div class="cmd-exec-body">' + escapeHtml(b.stdout) + '</div>';
+        }
+        if (b.stderr) {
+          bodyHtml += '<div class="cmd-exec-body stderr">[STDERR]\n' + escapeHtml(b.stderr) + '</div>';
+        }
+        if (!b.stdout && !b.stderr) {
+          bodyHtml = '<div class="cmd-exec-body" style="color:var(--color-text-muted);">[Command finished with Exit Code ' + (b.exitCode ?? 0) + ' — No stdout/stderr output]</div>';
+        }
+      }
+
+      el.innerHTML = headerHtml + bodyHtml;
       term.scrollTop = term.scrollHeight;
     }
 
-    async function pollSingleResult(taskId, blockId) {
-      const bodyEl = document.getElementById(blockId + '-body');
-      for (let i = 0; i < 8; i++) {
+    function copyCommandText(blockId) {
+      const b = commandConsoleHistory.find(x => x.id === blockId);
+      if (!b) return;
+      navigator.clipboard.writeText(b.cmd).then(() => showToast('Copied command to clipboard'));
+    }
+
+    function copyOutputText(blockId) {
+      const b = commandConsoleHistory.find(x => x.id === blockId);
+      if (!b) return;
+      const text = (b.stdout || '') + (b.stderr ? ('\n[STDERR]\n' + b.stderr) : '');
+      navigator.clipboard.writeText(text).then(() => showToast('Copied output to clipboard'));
+    }
+
+    async function pollSingleResultEnhanced(taskId, blockObj) {
+      for (let i = 0; i < 12; i++) {
         await new Promise(r => setTimeout(r, 600));
         try {
           const res = await fetch('/api/v1/controller/command/status?task_id=' + encodeURIComponent(taskId));
           if (res.ok) {
             const data = await res.json();
             if (data.status === 'success' || data.status === 'completed' || data.exit_code !== undefined) {
-              let out = data.stdout || '';
-              if (data.stderr) out += (out ? String.fromCharCode(10) : '') + '[STDERR] ' + data.stderr;
-              if (!out && data.status === 'success') out = '[Command completed with Exit Code 0 - No stdout output]';
-              if (bodyEl) {
-                bodyEl.innerHTML = '<div style="color:var(--accent-emerald); margin-bottom:4px;">[Exit Code ' + (data.exit_code ?? 0) + ' | ' + escapeHtml(data.agent_id || 'Host') + ']</div><pre style="font-family:inherit; white-space:pre-wrap;">' + escapeHtml(out) + '</pre>';
-              }
-              const term = document.getElementById('fleetCmdResults');
-              if (term) term.scrollTop = term.scrollHeight;
+              blockObj.status = 'COMPLETED';
+              blockObj.exitCode = data.exit_code !== undefined ? data.exit_code : 0;
+              blockObj.stdout = data.stdout || '';
+              blockObj.stderr = data.stderr || '';
+              blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+              renderCommandBlock(blockObj, false);
               return;
             }
           }
         } catch (e) {}
       }
+      blockObj.status = 'TIMED_OUT';
+      blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+      blockObj.stderr = 'Timed out awaiting response from agent (Task ID: ' + taskId + ')';
+      renderCommandBlock(blockObj, false);
     }
 
-    async function pollBatchResults(taskIds, blockId) {
-      const bodyEl = document.getElementById(blockId + '-body');
-      for (let i = 0; i < 8; i++) {
+    async function pollBatchResultsEnhanced(taskIds, blockObj) {
+      for (let i = 0; i < 15; i++) {
         await new Promise(r => setTimeout(r, 800));
         try {
           const promises = taskIds.map(tId => fetch('/api/v1/controller/command/status?task_id=' + encodeURIComponent(tId)).then(r => r.json()).catch(() => null));
           const results = await Promise.all(promises);
           const completed = results.filter(r => r && (r.status === 'success' || r.status === 'completed' || r.exit_code !== undefined));
 
-          if (completed.length > 0 && bodyEl) {
-            let html = '<div style="color:var(--accent-emerald); margin-bottom:6px;">Received responses from ' + completed.length + ' / ' + taskIds.length + ' hosts:</div>';
+          if (completed.length === taskIds.length || (i >= 10 && completed.length > 0)) {
+            blockObj.status = 'COMPLETED';
+            blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+            let combinedOut = '';
+            let combinedErr = '';
             completed.forEach(c => {
-              let out = c.stdout || '';
-              if (c.stderr) out += (out ? String.fromCharCode(10) : '') + '[STDERR] ' + c.stderr;
-              if (!out) out = '[Exit Code ' + (c.exit_code ?? 0) + ' - No stdout]';
-              html += '<div style="margin-top:6px; padding:4px 6px; background:rgba(255,255,255,0.03); border-radius:4px;"><strong style="color:var(--accent-emerald);">' + escapeHtml(c.agent_id || 'Host') + '</strong> (Exit: ' + (c.exit_code ?? 0) + '):<pre style="font-family:inherit; white-space:pre-wrap; margin-top:2px;">' + escapeHtml(out) + '</pre></div>';
+              const hostTag = '[' + (c.agent_id || 'Host') + ' (Exit ' + (c.exit_code ?? 0) + ')]:\n';
+              if (c.stdout) combinedOut += hostTag + c.stdout + '\n\n';
+              if (c.stderr) combinedErr += hostTag + c.stderr + '\n\n';
             });
-            bodyEl.innerHTML = html;
-            const term = document.getElementById('fleetCmdResults');
-            if (term) term.scrollTop = term.scrollHeight;
-            if (completed.length === taskIds.length) return;
+            blockObj.stdout = combinedOut.trim();
+            blockObj.stderr = combinedErr.trim();
+            blockObj.exitCode = completed.some(x => (x.exit_code ?? 0) !== 0) ? 1 : 0;
+            renderCommandBlock(blockObj, false);
+            return;
           }
         } catch (e) {}
       }
+      blockObj.status = 'TIMED_OUT';
+      blockObj.duration = (Date.now() - blockObj.startTimestamp) + 'ms';
+      blockObj.stderr = 'Batch execution timed out awaiting some responses';
+      renderCommandBlock(blockObj, false);
     }
 
     function copyIp(ip) {
@@ -4115,19 +4872,36 @@ confidential"></textarea>
         { name: 'Workstations Gateway', ip: '10.0.10.1', subnet: '10.0.10.0/24' }
       ];
       const agents = fleetAgentsCache || [];
+      const curTheme = document.documentElement.getAttribute('data-theme') || 'ocean-command';
+      const isCarbon = (curTheme === 'carbon-operations' || curTheme === 'carbon-black' || curTheme === 'carbon' || curTheme === 'stealth-ops');
+
+      const coreGradStart = isCarbon ? '#1c2028' : '#0d2847';
+      const coreGradEnd = isCarbon ? '#121419' : '#07111f';
+      const nodeGradStart = isCarbon ? '#171a20' : '#10233d';
+      const nodeGradEnd = isCarbon ? '#0d0f13' : '#0d1c31';
+      const agentGradStart = isCarbon ? '#171a20' : '#142a47';
+      const agentGradEnd = isCarbon ? '#0d0f13' : '#081426';
+
+      const coreStroke = isCarbon ? '#55b9f3' : '#38bdf8';
+      const gwLineStroke = isCarbon ? 'rgba(85, 185, 243, 0.45)' : 'rgba(56, 189, 248, 0.45)';
+      const gwBoxStroke = isCarbon ? 'rgba(203, 213, 225, 0.16)' : 'rgba(148, 163, 184, 0.22)';
+      const textPrimary = isCarbon ? '#f3f4f6' : '#f1f5f9';
+      const textSecondary = isCarbon ? '#a6afbd' : '#9cabc0';
+      const accentPrimary = isCarbon ? '#55b9f3' : '#38bdf8';
+      const successColor = '#2dd4bf';
 
       let svgHtml = '<defs>';
-      svgHtml += '<linearGradient id="coreGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0284c7"/><stop offset="100%" stop-color="#0369a1"/></linearGradient>';
-      svgHtml += '<linearGradient id="nodeGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1b2838"/><stop offset="100%" stop-color="#0d1929"/></linearGradient>';
-      svgHtml += '<linearGradient id="agentGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#141c2b"/><stop offset="100%" stop-color="#0b121e"/></linearGradient>';
+      svgHtml += '<linearGradient id="coreGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + coreGradStart + '"/><stop offset="100%" stop-color="' + coreGradEnd + '"/></linearGradient>';
+      svgHtml += '<linearGradient id="nodeGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + nodeGradStart + '"/><stop offset="100%" stop-color="' + nodeGradEnd + '"/></linearGradient>';
+      svgHtml += '<linearGradient id="agentGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + agentGradStart + '"/><stop offset="100%" stop-color="' + agentGradEnd + '"/></linearGradient>';
       svgHtml += '<filter id="coreGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>';
       svgHtml += '</defs>';
 
       // Draw Range Edge Core Gateway at center top: (450, 32)
       const coreX = 450, coreY = 32;
-      svgHtml += '<rect x="340" y="14" width="220" height="38" rx="6" fill="url(#coreGrad)" stroke="#38bdf8" stroke-width="1.5" filter="url(#coreGlow)"/>';
-      svgHtml += '<text x="450" y="30" fill="#ffffff" font-family="Inter, sans-serif" font-size="11" font-weight="700" text-anchor="middle">EDGE UPLINK &amp; CORE ROUTER</text>';
-      svgHtml += '<text x="450" y="43" fill="#bae6fd" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">10.0.0.1 // RANGE-CORE-GW</text>';
+      svgHtml += '<rect x="340" y="14" width="220" height="38" rx="6" fill="url(#coreGrad)" stroke="' + coreStroke + '" stroke-width="1.5" filter="url(#coreGlow)"/>';
+      svgHtml += '<text x="450" y="30" fill="' + textPrimary + '" font-family="Inter, sans-serif" font-size="11" font-weight="700" text-anchor="middle">EDGE UPLINK &amp; CORE ROUTER</text>';
+      svgHtml += '<text x="450" y="43" fill="' + accentPrimary + '" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">10.0.0.1 // RANGE-CORE-GW</text>';
 
       // Middle Row: Gateway Subnets
       const gwCount = nodes.length;
@@ -4141,17 +4915,17 @@ confidential"></textarea>
         gwCoords.push({ x: x, y: gwY, subnet: n.subnet || '' });
 
         // Curved line from Core to Gateway
-        svgHtml += '<path d="M ' + coreX + ' 52 C ' + coreX + ' 78, ' + x + ' 78, ' + x + ' 92" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="3,3"/>';
+        svgHtml += '<path d="M ' + coreX + ' 52 C ' + coreX + ' 78, ' + x + ' 78, ' + x + ' 92" fill="none" stroke="' + gwLineStroke + '" stroke-width="1.5" stroke-dasharray="3,3"/>';
 
         // Gateway Node Box
-        svgHtml += '<rect x="' + (x - 85) + '" y="92" width="170" height="38" rx="6" fill="url(#nodeGrad)" stroke="#1d3c6a" stroke-width="1.5"/>';
-        svgHtml += '<text x="' + x + '" y="108" fill="#f0fdfa" font-family="Inter, sans-serif" font-size="10" font-weight="600" text-anchor="middle">' + escapeHtml(n.name || 'Gateway') + '</text>';
-        svgHtml += '<text x="' + x + '" y="121" fill="#38bdf8" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">' + escapeHtml(n.subnet || n.ip || '') + '</text>';
+        svgHtml += '<rect x="' + (x - 85) + '" y="92" width="170" height="38" rx="6" fill="url(#nodeGrad)" stroke="' + gwBoxStroke + '" stroke-width="1.5"/>';
+        svgHtml += '<text x="' + x + '" y="108" fill="' + textPrimary + '" font-family="Inter, sans-serif" font-size="10" font-weight="600" text-anchor="middle">' + escapeHtml(n.name || 'Gateway') + '</text>';
+        svgHtml += '<text x="' + x + '" y="121" fill="' + accentPrimary + '" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">' + escapeHtml(n.subnet || n.ip || '') + '</text>';
       });
 
       // Bottom Row: Connected Fleet Host Agents
       if (agents.length === 0) {
-        svgHtml += '<text x="450" y="195" fill="#7dd3fc" font-family="Inter, sans-serif" font-size="11" text-anchor="middle" opacity="0.75">Awaiting agent connection to populate live endpoint topology...</text>';
+        svgHtml += '<text x="450" y="195" fill="' + accentPrimary + '" font-family="Inter, sans-serif" font-size="11" text-anchor="middle" opacity="0.75">Awaiting agent connection to populate live endpoint topology...</text>';
       } else {
         const agentCount = agents.length;
         const agSpacing = Math.min(180, 840 / agentCount);
@@ -4162,15 +4936,15 @@ confidential"></textarea>
           const targetGw = gwCoords[idx % gwCoords.length] || { x: coreX, y: gwY };
 
           const isOnline = (a.status || '').toLowerCase() === 'online';
-          const strokeColor = isOnline ? '#10b981' : '#64748b';
+          const strokeColor = isOnline ? successColor : (isCarbon ? '#717b8b' : '#66758a');
           svgHtml += '<path d="M ' + targetGw.x + ' 130 C ' + targetGw.x + ' 158, ' + ax + ' 158, ' + ax + ' 178" fill="none" stroke="' + strokeColor + '" stroke-width="1.2"/>';
 
           // Host Node Card
-          svgHtml += '<g style="cursor:pointer;" onclick="inspectAgent(\'' + escapeHtml(a.id) + '\')" title="Click to Inspect ' + escapeHtml(a.hostname || a.id) + '">';
-          svgHtml += '<rect x="' + (ax - 68) + '" y="178" width="136" height="42" rx="5" fill="url(#agentGrad)" stroke="' + (isOnline ? '#059669' : '#334155') + '" stroke-width="1.2"/>';
-          svgHtml += '<circle cx="' + (ax - 52) + '" cy="193" r="4" fill="' + (isOnline ? '#10b981' : '#94a3b8') + '"/>';
-          svgHtml += '<text x="' + (ax + 2) + '" y="196" fill="#f8fafc" font-family="Inter, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">' + escapeHtml((a.hostname || a.id).slice(0, 14)) + '</text>';
-          svgHtml += '<text x="' + ax + '" y="210" fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="8.5" text-anchor="middle">' + escapeHtml(a.primary_ip || '127.0.0.1') + '</text>';
+          svgHtml += '<g style="cursor:pointer;" onclick="inspectAgent('' + escapeHtml(a.id) + '')" title="Click to Inspect ' + escapeHtml(a.hostname || a.id) + '">';
+          svgHtml += '<rect x="' + (ax - 68) + '" y="178" width="136" height="42" rx="5" fill="url(#agentGrad)" stroke="' + (isOnline ? successColor : (isCarbon ? 'rgba(203,213,225,0.15)' : 'rgba(148,163,184,0.18)')) + '" stroke-width="1.2"/>';
+          svgHtml += '<circle cx="' + (ax - 52) + '" cy="193" r="4" fill="' + (isOnline ? successColor : (isCarbon ? '#717b8b' : '#66758a')) + '"/>';
+          svgHtml += '<text x="' + (ax + 2) + '" y="196" fill="' + textPrimary + '" font-family="Inter, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">' + escapeHtml((a.hostname || a.id).slice(0, 14)) + '</text>';
+          svgHtml += '<text x="' + ax + '" y="210" fill="' + textSecondary + '" font-family="JetBrains Mono, monospace" font-size="8.5" text-anchor="middle">' + escapeHtml(a.primary_ip || '127.0.0.1') + '</text>';
           svgHtml += '</g>';
         });
       }
