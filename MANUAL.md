@@ -1,134 +1,296 @@
 # RangeForge User Emulation Suite (`rangeforge-ue`)
-## Operator & Technical Reference Manual
+## Operator, Architecture & Configuration Reference Manual
+
+**Version:** `2.0.0-oss`  
+**License:** Apache License 2.0  
+**Target Audience:** Cyber Range Architects, SOC Analysts, Detection Engineers, Exercise Directors, Red/Blue/Purple Teams
 
 ---
 
 ## Table of Contents
-1. [Architecture & Component Interaction](#1-architecture--component-interaction)
-2. [Operating Roles & Modes](#2-operating-roles--modes)
-3. [Configuration Reference & Syntax Guide](#3-configuration-reference--syntax-guide)
-   - [Manager Server Configuration (`configs/manager.yaml`)](#a-manager-server-configuration)
-   - [Host Agent Configurations (`configs/agent_windows.yaml` & `agent_unix.yaml`)](#b-host-agent-configurations)
-   - [Persona Emulation Profiles (`configs/profiles/*.yaml`)](#c-persona-emulation-profiles)
-   - [Interactive Network Topology (`configs/topology.json`)](#d-interactive-network-topology)
-   - [Cyber Range Scenarios (`configs/ranges.json`)](#e-cyber-range-scenarios)
-   - [Administrative Authentication (`configs/admin_auth.json`)](#f-administrative-authentication)
-   - [Web & Identity Corpus (`corpus/`)](#g-web--identity-corpus)
-4. [Multi-Network Deployment & Firewall Traversal](#4-multi-network-deployment--firewall-traversal)
-5. [Emulation Engines & Realism Calibration](#5-emulation-engines--realism-calibration)
-6. [Interactive Web UI Dashboard](#6-interactive-web-ui-dashboard)
-7. [Controller CLI & REST API Reference](#7-controller-cli--rest-api-reference)
-8. [Operational Security & Zero-Artifact Guarantees](#8-operational-security--zero-artifact-guarantees)
-9. [Troubleshooting & Frequently Asked Questions](#9-troubleshooting--frequently-asked-questions)
+1. [Executive Summary & Core Principles](#1-executive-summary--core-principles)
+2. [System Architecture & Wire Protocol](#2-system-architecture--wire-protocol)
+   - [2.1 High-Level Architecture](#21-high-level-architecture)
+   - [2.2 Connection Handshake & Lifecycle Protocol](#22-connection-handshake--lifecycle-protocol)
+   - [2.3 Dual-Protocol TLS/HTTP Multiplexing](#23-dual-protocol-tlshttp-multiplexing)
+   - [2.4 Offline Fault-Tolerance & Buffer Queue](#24-offline-fault-tolerance--buffer-queue)
+3. [Operational Roles & CLI Command Reference](#3-operational-roles--cli-command-reference)
+   - [3.1 Web UI Mode (`ui`)](#31-web-ui-mode-ui)
+   - [3.2 Dedicated Coordinator Mode (`manager`)](#32-dedicated-coordinator-mode-manager)
+   - [3.3 Target Endpoint Daemon (`agent`)](#33-target-endpoint-daemon-agent)
+   - [3.4 Operator CLI Client (`controller`)](#34-operator-cli-client-controller)
+   - [3.5 Self-Contained Evaluation (`standalone`)](#35-self-contained-evaluation-standalone)
+4. [Configuration Files & Syntax Specification](#4-configuration-files--syntax-specification)
+   - [4.1 Manager Configuration (`configs/manager.yaml`)](#41-manager-configuration-configsmanageryaml)
+   - [4.2 Windows Host Agent (`configs/agent_windows.yaml`)](#42-windows-host-agent-configsagent_windowsyaml)
+   - [4.3 Unix Host Agent (`configs/agent_unix.yaml`)](#43-unix-host-agent-configsagent_unixyaml)
+   - [4.4 Persona Emulation Profiles (`configs/profiles/*.yaml`)](#44-persona-emulation-profiles-configsprofilesyaml)
+   - [4.5 Network Topology Map (`configs/topology.json`)](#45-network-topology-map-configstopologyjson)
+   - [4.6 Cyber Range Scenarios (`configs/ranges.json`)](#46-cyber-range-scenarios-configsrangesjson)
+   - [4.7 Operator Authentication (`configs/admin_auth.json`)](#47-operator-authentication-configsadmin_authjson)
+   - [4.8 Emulation Corpora (`corpus/`)](#48-emulation-corpora-corpus)
+5. [Network Topologies & Firewall Traversal](#5-network-topologies--firewall-traversal)
+   - [5.1 Single-Interface Edge Traversal (pfSense / OPNsense)](#51-single-interface-edge-traversal-pfsense--opnsense)
+   - [5.2 Outbound-Only State Engine & NAT Boundaries](#52-outbound-only-state-engine--nat-boundaries)
+   - [5.3 Enterprise Proxies & PAC Configurations](#53-enterprise-proxies--pac-configurations)
+   - [5.4 Air-Gapped & Isolated Range Operations](#54-air-gapped--isolated-range-operations)
+6. [Emulation Engines & Behavioral Realism](#6-emulation-engines--behavioral-realism)
+   - [6.1 Web Browsing Engine (Gaussian Jitter & Asset Bursts)](#61-web-browsing-engine)
+   - [6.2 SMB / CIFS / NFS File Share Engine](#62-smb--cifs--nfs-file-share-engine)
+   - [6.3 Benign Host Activity & Safe Process Execution](#63-benign-host-activity--safe-process-execution)
+   - [6.4 Remote Command Execution Engine](#64-remote-command-execution-engine)
+   - [6.5 Hardware & OS Telemetry Subsystem](#65-hardware--os-telemetry-subsystem)
+7. [Detection Engineering & SIEM / EDR Noise Calibration](#7-detection-engineering--siem--edr-noise-calibration)
+   - [7.1 Windows Event Log Telemetry Mapping](#71-windows-event-log-telemetry-mapping)
+   - [7.2 Linux Auditd & eBPF Event Generation](#72-linux-auditd--ebpf-event-generation)
+   - [7.3 Noise Density Matrix (Silent to Stress)](#73-noise-density-matrix-silent-to-stress)
+8. [Interactive Web Operations Console](#8-interactive-web-operations-console)
+   - [8.1 Real-Time SVG Sparklines & Smoothing](#81-real-time-svg-sparklines--smoothing)
+   - [8.2 Fleet Roster & Host Inspector Modal](#82-fleet-roster--host-inspector-modal)
+   - [8.3 Interactive SVG Network Topology Visualizer](#83-interactive-svg-network-topology-visualizer)
+   - [8.4 Dual Cyber-Ops Theme System](#84-dual-cyber-ops-theme-system)
+9. [Comprehensive REST API Reference](#9-comprehensive-rest-api-reference)
+10. [Operational Security & Anti-Forensics Guarantees](#10-operational-security--anti-forensics-guarantees)
+11. [Troubleshooting & Operator Diagnostics Runbook](#11-troubleshooting--operator-diagnostics-runbook)
 
 ---
 
-## 1. Architecture & Component Interaction
+## 1. Executive Summary & Core Principles
 
-RangeForge is engineered as a **single, unified, zero-dependency Go binary**. The binary dynamically activates specific internal engines based on the invoked subcommand:
+The **RangeForge User Emulation Suite (`rangeforge-ue`)** addresses the most pervasive weakness in cyber defense exercises: **the absence of realistic background network and host activity**. When a training range is completely idle, detecting unauthorized activity requires little skill; SOC analysts simply look for the only IP address communicating across the subnet.
 
-```
-+-----------------------------------------------------------------------------+
-|                          RANGEFORGE UNIFIED BINARY                          |
-|                                                                             |
-|  [manager]              [controller]              [agent]      [standalone] |
-|     |                        |                       |              |       |
-|     v                        v                       v              v       |
-|  Orchestrator           CLI Console             Host Daemon    Local Runner |
-|  REST API & UI          Fleet Inspection        Telemetry      Self-Contained|
-|  TLS Listener           Command Dispatch        Emulators      No Coordinator|
-+-----------------------------------------------------------------------------+
-```
-
-### Communication Flow
-1. **Outbound-Only HTTPS Handshake**: Host Agents initiate an HTTPS POST to `/api/v1/agent/register` on the Manager (port 8443). Agents require **no inbound listening sockets**.
-2. **Dynamic Heartbeat & Telemetry Synchronization**: Agents send periodic heartbeats (default every 5s) transmitting CPU utilization, RAM consumption, disk space, network adapter IPs, and an inventory of functional local binaries (e.g. `ping`, `git`, `powershell`, `netstat`).
-3. **Task & Command Dispatching**: Operators issue remote commands or persona reassignments via the Controller CLI or Web Dashboard. Tasks are queued on the Manager and fetched by agents on subsequent check-ins or dispatched over active streams.
-4. **Offline Resilient Buffering**: If a router, firewall, or switch drops connectivity, agents buffer up to 50 telemetry samples in RAM and retry with exponential backoff.
+RangeForge generates authentic, continuous background activity that mirrors human users across enterprise workstations, servers, and routers:
+- **Zero External Dependencies**: Built entirely with Go's standard library and lightweight YAML parsing. Requires no Python, Node.js, external database, or third-party packages.
+- **Outbound-Only HTTPS**: Host agents initiate all connections over outbound HTTPS (port 8443). They open **zero inbound listening ports**, traversing stateful firewalls, pfSense routers, and NAT gateways effortlessly.
+- **Zero Persistent Footprint**: Temporary files generated to simulate user file share activity are tracked in memory and automatically unlinked upon agent shutdown.
+- **Cross-Platform Uniformity**: Identical configuration structures, persona definitions, and telemetry contracts run seamlessly on Windows, Linux, FreeBSD, and macOS.
 
 ---
 
-## 2. Operating Roles & Modes
+## 2. System Architecture & Wire Protocol
 
-### `ui` (Web Dashboard & Local Range Host)
-Launches the Central Manager HTTPS listener, serves the single-page operations console, and registers a local Host Agent on the host machine.
+### 2.1 High-Level Architecture
+
+RangeForge is organized into three operational tiers:
+
+```
+                            ┌────────────────────────────────────────┐
+                            │        OPERATOR / CONTROLLER           │
+                            │      - CLI Management Console          │
+                            │      - REST Automation Scripts         │
+                            └───────────────────┬────────────────────┘
+                                                │ REST API / CLI
+                                                ▼
+                            ┌────────────────────────────────────────┐
+                            │          RANGEFORGE MANAGER            │
+                            │   - Port 8443 HTTPS Listener           │
+                            │   - Agent Registry & Heartbeat Monitor │
+                            │   - Interactive Web UI Operations      │
+                            │   - Remote Command Queue               │
+                            └───────────────────┬────────────────────┘
+                                                │ HTTPS POST (Port 8443)
+                                                │ Outbound From Endpoints
+                     ┌──────────────────────────┴──────────────────────────┐
+                     │                                                     │
+                     ▼                                                     ▼
+     ┌───────────────────────────────┐                     ┌───────────────────────────────┐
+     │      HOST AGENT: WINDOWS      │                     │       HOST AGENT: UNIX        │
+     │  - Windows 10/11/Server       │                     │  - Linux (Ubuntu/RHEL/Debian) │
+     │  - WMI / Native Win32 Stats   │                     │  - FreeBSD 14 / pfSense 2.7+  │
+     │  - SMB / Web / Process Noise  │                     │  - /proc, sysctl, Net Stats   │
+     └───────────────────────────────┘                     └───────────────────────────────┘
+```
+
+### 2.2 Connection Handshake & Lifecycle Protocol
+
+All communications between Host Agents and the Manager occur over outbound HTTPS:
+
+```
+Agent Endpoint                                                      Central Manager
+      │                                                                    │
+      ├────────────────── 1. POST /api/v1/agent/register ─────────────────►│
+      │   Payload: Hostname, OS, Arch, IPs, MAC, Tags, Tools, Persona      │
+      │                                                                    │
+      │◄───────────────── 2. HTTP 200 OK (Registration Ack) ───────────────┤
+      │   Response: AgentID, HeartbeatIntervalSec, ActivePersonaConfig     │
+      │                                                                    │
+      │                                                                    │
+      ├──── 3. POST /api/v1/agent/heartbeat (every HeartbeatIntervalSec) ──►│
+      │   Payload: AgentID, CPU%, RAM%, Disk%, NetworkStats, Status        │
+      │                                                                    │
+      │◄─── 4. HTTP 200 OK (Heartbeat Ack + Pending Directives) ───────────┤
+      │   Response: PersonaUpdates, QueuedCommands, ConfigReloadSignals    │
+      │                                                                    │
+      ▼                                                                    ▼
+```
+
+1. **Initial Registration**: When launched, the Agent queries its local hardware, discovers functional command-line tools (`ping`, `git`, `powershell`, `netstat`, `curl`), and sends a registration request.
+2. **Registration Acknowledgment**: The Manager assigns a unique `agent_id` (or recognizes an existing persistent ID) and returns the assigned persona parameters.
+3. **Periodic Telemetry Beacon**: Every $N$ seconds (default: 5s), the Agent posts real-time CPU, RAM, disk, and network stats.
+4. **Command & Directive Piggybacking**: Rather than maintaining separate polling channels, pending administrative commands and persona transitions are piggybacked onto the heartbeat response, minimizing network footprint.
+
+### 2.3 Dual-Protocol TLS/HTTP Multiplexing
+
+To prevent operator lockouts caused by strict browser certificate warnings or scripts lacking TLS flags, RangeForge implements a custom connection listener (`pkg/tlsutil/`):
+- When a connection arrives on port 8443, the listener inspects the first byte without consuming it (`PEEK 1 byte`).
+- If the first byte is `0x16` (TLS Handshake Record), the connection is passed to the Go standard library `crypto/tls` engine.
+- If the first byte corresponds to an ASCII HTTP method (`G` for `GET`, `P` for `POST`, `H` for `HEAD`), the connection is processed directly as plaintext HTTP.
+- Both secure HTTPS and plaintext HTTP operate seamlessly on the exact same port (8443).
+
+### 2.4 Offline Fault-Tolerance & Buffer Queue
+
+If an edge firewall, router reboot, or network partition temporarily severs communication between an Agent and the Manager:
+- The Agent does **not** terminate or crash.
+- Telemetry samples are enqueued in an in-memory ring buffer (up to 50 samples).
+- When connectivity is restored, buffered telemetry is flushed to the Manager in chronological order.
+- Background user emulation (browsing, file operations, ping audits) continues running uninterrupted based on the last known persona profile.
+
+---
+
+## 3. Operational Roles & CLI Command Reference
+
+The `rangeforge-ue` binary supports five primary operational modes:
+
+### 3.1 Web UI Mode (`ui`)
+
+Launches the Central Manager HTTPS server, serves the single-page web console, and automatically starts an internal Host Agent representing the local machine.
+
 ```powershell
-.\bin\rangeforge-ue.exe ui --port 8443
+# Windows
+.\bin\rangeforge-ue.exe ui --host 0.0.0.0 --port 8443
 ```
 
-### `manager` (Dedicated Central Coordinator)
-Runs the coordinator daemon without launching a local host agent. Intended for dedicated server nodes in multi-subnet cyber ranges.
 ```bash
-./bin/rangeforge-ue-linux manager --host 0.0.0.0 --port 8443
+# Linux / Unix
+./bin/rangeforge-ue-linux ui --host 0.0.0.0 --port 8443
 ```
 
-### `agent` (Target Endpoint Daemon)
-Executes natively on Windows, Linux, FreeBSD, or macOS targets. Collects local system telemetry and autonomously generates user activity.
-```powershell
-.\bin\rangeforge-ue.exe agent --manager https://10.0.0.1:8443 --persona office_worker
-```
+#### Command Flags:
+| Flag | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `--host` | string | `"0.0.0.0"` | Network interface address to bind. |
+| `--port` | integer | `8443` | TCP port for HTTPS REST API and Web Console. |
+| `--config` | string | `"./configs/manager.yaml"` | Path to Manager YAML configuration file. |
+| `--cert` | string | `"./certs/server.crt"` | Path to TLS certificate (auto-generated if missing). |
+| `--key` | string | `"./certs/server.key"` | Path to TLS private key (auto-generated if missing). |
 
-### `controller` (Operator CLI)
-Command-line client for exercise directors to inspect telemetry, list fleet endpoints, and dispatch remote commands.
+---
+
+### 3.2 Dedicated Coordinator Mode (`manager`)
+
+Launches the Central Manager service without registering a local host agent. Recommended for dedicated orchestrator nodes in production cyber ranges.
+
 ```bash
-./bin/rangeforge-ue-linux controller agents --manager https://10.0.0.1:8443
+./bin/rangeforge-ue-linux manager --host 0.0.0.0 --port 8443 --config ./configs/manager.yaml
 ```
 
-### `standalone` (Evaluation Mode)
-Executes full user emulation routines locally in memory without communicating with a central coordinator.
+#### Command Flags:
+| Flag | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `--host` | string | `"0.0.0.0"` | Network interface address to bind. |
+| `--port` | integer | `8443` | TCP port for HTTPS REST API and Web Console. |
+| `--config` | string | `"./configs/manager.yaml"` | Path to Manager YAML configuration file. |
+
+---
+
+### 3.3 Target Endpoint Daemon (`agent`)
+
+Runs the user emulation daemon on a target endpoint. Collects system metrics and generates background traffic.
+
 ```powershell
-.\bin\rangeforge-ue.exe standalone
+# Windows Host
+.\bin\rangeforge-ue.exe agent --manager https://10.0.0.1:8443 --persona office_worker --config ./configs/agent_windows.yaml
+```
+
+```bash
+# Linux Host
+./bin/rangeforge-ue-linux agent --manager https://10.0.0.1:8443 --persona developer --config ./configs/agent_unix.yaml
+```
+
+```bash
+# FreeBSD / pfSense Gateway
+./bin/rangeforge-ue-freebsd agent --manager https://10.0.0.1:8443 --persona sysadmin --config ./configs/agent_unix.yaml
+```
+
+#### Command Flags:
+| Flag | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `--manager` | string | `"https://127.0.0.1:8443"` | URL of the central RangeForge Manager server. |
+| `--persona` | string | `"office_worker"` | Baseline persona profile (`office_worker`, `developer`, `sysadmin`, `executive`). |
+| `--config` | string | `""` | Path to Agent YAML configuration file (overrides CLI defaults). |
+| `--tag` | string | `""` | Optional metadata tag to attach to endpoint (e.g. `subnet-finance`). |
+
+---
+
+### 3.4 Operator CLI Client (`controller`)
+
+Allows exercise directors and instructors to interact with the fleet via command line.
+
+#### Subcommands:
+```bash
+# 1. List all active registered endpoints
+rangeforge-ue controller agents --manager https://10.0.0.1:8443
+
+# 2. Inspect real-time metrics for a specific endpoint
+rangeforge-ue controller stats --manager https://10.0.0.1:8443 --agent <agent-id>
+
+# 3. Dispatch an ad-hoc shell command to an endpoint
+rangeforge-ue controller exec --manager https://10.0.0.1:8443 --agent <agent-id> --cmd "whoami /priv"
+
+# 4. Dynamically reassign an endpoint's persona
+rangeforge-ue controller persona --manager https://10.0.0.1:8443 --agent <agent-id> --set-persona sysadmin
 ```
 
 ---
 
-## 3. Configuration Reference & Syntax Guide
+### 3.5 Self-Contained Evaluation (`standalone`)
 
-### A. Manager Server Configuration
-**File:** [`configs/manager.yaml`](configs/manager.yaml)
+Runs user emulation directly in the current terminal without communicating with any central coordinator. Ideal for testing emulation engines or generating local noise.
+
+```powershell
+.\bin\rangeforge-ue.exe standalone --persona office_worker
+```
+
+---
+
+## 4. Configuration Files & Syntax Specification
+
+Every configuration file in RangeForge uses clean YAML or JSON with complete syntax validation.
+
+### 4.1 Manager Configuration (`configs/manager.yaml`)
+
+Defines network binding, TLS parameters, heartbeat timeouts, and persona directories.
 
 ```yaml
-# Network interface binding (0.0.0.0 binds all interfaces)
 listen_host: "0.0.0.0"
-
-# TCP port for unified HTTPS/HTTP service
 listen_port: 8443
-
-# Cryptographic transport encryption
 tls_enabled: true
 tls_cert_path: "./certs/server.crt"
 tls_key_path: "./certs/server.key"
-
-# Heartbeat timeout in seconds before marking agent as offline
 heartbeat_timeout_sec: 30
-
-# Default persona profile automatically assigned to new endpoints
 default_persona: "office_worker"
-
-# Directory where persona YAML profiles are loaded from
 profiles_dir: "./configs/profiles"
-
-# Set to true when evaluating Manager on Windows workstations
 allow_unsupported_os: false
 ```
 
-#### Parameter Breakdown:
-| Key | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `listen_host` | string | `"0.0.0.0"` | Network address to bind. `"0.0.0.0"` binds all interfaces; `"127.0.0.1"` restricts access to local host. |
-| `listen_port` | integer | `8443` | Port for HTTPS REST API and Web Console. |
-| `tls_enabled` | boolean | `true` | When true, enforces TLS 1.2/1.3 encryption. |
-| `tls_cert_path` | string | `"./certs/server.crt"` | Path to X.509 certificate. Auto-generated if missing. |
-| `tls_key_path` | string | `"./certs/server.key"` | Path to private key. Auto-generated if missing. |
-| `heartbeat_timeout_sec` | integer | `30` | Seconds without an agent check-in before marking offline. |
-| `default_persona` | string | `"office_worker"` | Persona assigned to newly registering endpoints. |
-| `profiles_dir` | string | `"./configs/profiles"` | Directory containing persona YAML files. |
-| `allow_unsupported_os` | boolean | `false` | Permits running Manager on non-Unix nodes for testing. |
+#### Syntax Reference Table:
+| Parameter | Type | Req | Default | Valid Values | Description |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `listen_host` | string | Yes | `"0.0.0.0"` | IP address | Interface address to bind. `"0.0.0.0"` binds all adapters; `"127.0.0.1"` restricts to localhost. |
+| `listen_port` | integer| Yes | `8443` | `1024–65535` | TCP port for HTTPS REST API and Web Console. |
+| `tls_enabled` | bool | Yes | `true` | `true`, `false` | Enables TLS encryption. When false, runs plaintext HTTP only. |
+| `tls_cert_path`| string | No | `"./certs/server.crt"` | File path | Path to PEM-encoded X.509 certificate. Auto-generated if absent. |
+| `tls_key_path` | string | No | `"./certs/server.key"` | File path | Path to PEM-encoded private key. Auto-generated if absent. |
+| `heartbeat_timeout_sec` | integer | Yes | `30` | `10–300` | Seconds without an agent check-in before marking status as offline. |
+| `default_persona` | string | Yes | `"office_worker"` | Persona name | Profile assigned to new endpoints that register without specifying a persona. |
+| `profiles_dir` | string | Yes | `"./configs/profiles"` | Directory path | Directory containing persona YAML definitions. |
+| `allow_unsupported_os` | bool | No | `false` | `true`, `false` | Permits running Manager on non-Linux OS without warnings. |
 
 ---
 
-### B. Host Agent Configurations
-**Files:** [`configs/agent_windows.yaml`](configs/agent_windows.yaml) and [`configs/agent_unix.yaml`](configs/agent_unix.yaml)
+### 4.2 Windows Host Agent (`configs/agent_windows.yaml`)
+
+Configures an agent executing on a Windows workstation or server:
 
 ```yaml
 manager_url: "https://10.0.0.1:8443"
@@ -147,26 +309,48 @@ tags:
   - "cyber-training-range"
 ```
 
-#### Parameter Breakdown:
-| Key | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `manager_url` | string | `"https://10.0.0.1:8443"` | Outbound HTTPS address of central Manager server. |
-| `heartbeat_sec` | integer | `5` | Cadence in seconds between telemetry check-ins. |
-| `bind_interface` | string | `""` | Interface to bind (e.g. `"Ethernet"`, `"eth0"`). Leave empty for auto-detection. |
-| `persona` | string | `"office_worker"` | Baseline persona profile loaded from Manager. |
-| `web_corpus_file` | string | `"./corpus/web_corpus.json"` | JSON file containing URLs and User-Agents. |
-| `creds_file` | string | `"./corpus/user_creds.json"` | Mock credentials used in simulated files and logs. |
-| `enable_web` | boolean | `true` | Master switch for web browsing emulation engine. |
-| `enable_shares` | boolean | `true` | Master switch for SMB/CIFS file share emulation. |
-| `enable_host_activity`| boolean | `true` | Master switch for local benign process and file emulation. |
-| `tags` | list | `[...]` | String labels attached to telemetry for filtering in API. |
+#### Syntax Reference Table:
+| Parameter | Type | Req | Default | Valid Values | Description |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `manager_url` | string | Yes | `"https://10.0.0.1:8443"` | Valid URL | Address of central coordinator. |
+| `heartbeat_sec`| integer| Yes | `5` | `1–60` | Telemetry transmission interval in seconds. |
+| `bind_interface` | string | No | `""` | Interface name | Specific adapter name (e.g. `"Ethernet 2"`). Empty string auto-detects. |
+| `persona` | string | Yes | `"office_worker"` | Persona name | Baseline persona to initialize upon startup. |
+| `web_corpus_file` | string | Yes | `"./corpus/web_corpus.json"` | File path | JSON file containing target URLs and User-Agents. |
+| `creds_file` | string | Yes | `"./corpus/user_creds.json"` | File path | Mock credential database for simulated activity. |
+| `shares_file` | string | No | `""` | File path | Path to custom network share targets list. |
+| `enable_web` | bool | Yes | `true` | `true`, `false` | Master toggle for HTTP/S web browsing engine. |
+| `enable_shares`| bool | Yes | `true` | `true`, `false` | Master toggle for SMB/CIFS network share engine. |
+| `enable_host_activity` | bool | Yes | `true` | `true`, `false` | Master toggle for benign diagnostic processes. |
+| `tags` | list | No | `[...]` | String array | Descriptive tags for filtering and topology mapping. |
 
 ---
 
-### C. Persona Emulation Profiles
-**Directory:** [`configs/profiles/`](configs/profiles/)
+### 4.3 Unix Host Agent (`configs/agent_unix.yaml`)
 
-Personas define the behavior, noise density, and operational focus of endpoints.
+Configures an agent executing on Linux, FreeBSD (pfSense), or macOS:
+
+```yaml
+manager_url: "https://10.0.0.1:8443"
+heartbeat_sec: 5
+bind_interface: ""
+persona: "developer"
+web_corpus_file: "./corpus/web_corpus.json"
+creds_file: "./corpus/user_creds.json"
+shares_file: ""
+enable_web: true
+enable_shares: true
+enable_host_activity: true
+tags:
+  - "linux-server"
+  - "development-vlan"
+```
+
+---
+
+### 4.4 Persona Emulation Profiles (`configs/profiles/*.yaml`)
+
+Persona profiles model authentic user roles with distinct operational cadences.
 
 #### Full YAML Schema:
 ```yaml
@@ -186,6 +370,7 @@ web_browsing:
     - http://portal.range.local
   search_keywords:
     - "quarterly expense report template"
+    - "annual compliance training login"
 
 file_share:
   enabled: true
@@ -213,20 +398,19 @@ host_activity:
   temp_file_operations: true
 ```
 
-#### Key Parameter Descriptions:
-- **`requests_per_minute_min` / `max`**: Controls request cadence. Low values (2–6) mimic deliberate human browsing; higher values (15–30) mimic automated tools or active researchers.
-- **`dwell_time_min_sec` / `max_sec`**: The "think time" between consecutive page navigations. Modeled with Poisson/Gaussian random jitter.
-- **`fetch_assets`**: When true, requests static CSS, JS, and image files linked to target pages to create multi-packet bursts on network sensors.
-- **`read_ratio` / `write_ratio`**: Decimal percentages (summing to 1.0) governing share interactions. `read_ratio: 0.95` means 95% of share actions are read-only.
-- **`safe_processes`**: List of non-destructive diagnostic tools executed without elevation to create realistic EDR/SIEM telemetry.
-- **`simulate_office_docs`**: Authors realistic temporary draft files (`.docx`, `.xlsx`, `.pdf`) in user profile folders with automated cleanup.
+#### Detailed Parameter Breakdown:
+- **`web_browsing.requests_per_minute_min` / `max`**: Integer range governing how many pages the agent navigates per minute. 2–6 represents calm human reading; 15–30 represents active research.
+- **`web_browsing.dwell_time_min_sec` / `max_sec`**: The "think time" between consecutive page clicks. Calculated with random Gaussian jitter to avoid periodic spikes.
+- **`web_browsing.fetch_assets`**: When true, parses HTML bodies and initiates parallel GET requests for embedded `.css`, `.js`, and `.png` assets, producing authentic multi-packet flows on network sensors.
+- **`file_share.read_ratio` / `write_ratio`**: Floats summing to 1.0. A `read_ratio` of `0.95` ensures that 95% of share operations are benign file reads, preventing disk saturation.
+- **`host_activity.safe_processes`**: Array of non-destructive diagnostic binaries executed without elevation to generate realistic process creation telemetry.
+- **`host_activity.simulate_office_docs`**: Authors temporary draft files (`.docx`, `.xlsx`, `.pdf`) in user temporary folders and purges them upon completion.
 
 ---
 
-### D. Interactive Network Topology
-**File:** [`configs/topology.json`](configs/topology.json)
+### 4.5 Network Topology Map (`configs/topology.json`)
 
-Defines subnet gateways rendered in the Web UI Interactive SVG Topology Map:
+Defines cyber range subnets and gateway routers displayed in the Web UI Interactive SVG Topology Map:
 
 ```json
 [
@@ -253,20 +437,30 @@ Defines subnet gateways rendered in the Web UI Interactive SVG Topology Map:
 
 ---
 
-### E. Cyber Range Scenarios
-**File:** [`configs/ranges.json`](configs/ranges.json)
+### 4.6 Cyber Range Scenarios (`configs/ranges.json`)
 
-Defines high-level scenario parameters, DNS servers, and intensity multipliers:
+Defines exercise intensity multipliers and network latency characteristics:
+
+```json
+{
+  "range_id": "enterprise-cyber-range-01",
+  "name": "Corporate Enterprise Range",
+  "intensity": "Standard (1.0x)",
+  "jitter_pct": 30,
+  "latency_ms": 15,
+  "dns_servers": ["10.0.0.1", "1.1.1.1"]
+}
+```
+
 - **`intensity`**: Global activity multiplier (`"Low (0.5x)"`, `"Standard (1.0x)"`, `"High (2.5x)"`, `"Stress (5.0x)"`).
 - **`jitter_pct`**: Randomization percentage applied to dwell times (e.g. `30` applies $\pm 30\%$ variance).
-- **`latency_ms`**: Simulated network latency in milliseconds.
+- **`latency_ms`**: Simulated artificial network latency in milliseconds.
 
 ---
 
-### F. Administrative Authentication
-**File:** [`configs/admin_auth.json`](configs/admin_auth.json)
+### 4.7 Operator Authentication (`configs/admin_auth.json`)
 
-Stores salted SHA-256 credentials for Web UI and REST API operator access:
+Stores salted cryptographic credentials for administrative operator access:
 
 ```json
 {
@@ -279,117 +473,378 @@ Stores salted SHA-256 credentials for Web UI and REST API operator access:
 
 - **Default Credentials**: `admin` / `rangeforge`
 - **Hash Algorithm**: `hex(SHA-256(salt + ":" + password))`
-- Credentials can be changed dynamically via the Web UI Settings modal or by updating this file.
+- To generate a new hash via PowerShell:
+  ```powershell
+  $salt = "ebad3cddb04d1052ab0e66937c9c6031"
+  $pass = "NewSecurePassword"
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes("$salt`:$pass")
+  $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
+  [BitConverter]::ToString($hash).Replace("-","").ToLower()
+  ```
 
 ---
 
-### G. Web & Identity Corpus
-**Directory:** [`corpus/`](corpus/)
+### 4.8 Emulation Corpora (`corpus/`)
 
-- **`web_corpus.json`**: Reference URLs, intranet portals, search phrases, and browser User-Agents.
-- **`user_creds.json`**: Simulated user accounts, domains, roles, and default persona assignments.
-- **`wordlist.txt`**: Scenario dictionary used by the document authoring engine to name temporary files.
-
----
-
-## 4. Multi-Network Deployment & Firewall Traversal
-
-RangeForge is optimized for challenging network topologies:
-
-### A. pfSense & Router Traversal
-- **Outbound-Only HTTPS**: Host Agents require **zero inbound listening ports**. Communication flows outbound to the Manager on port 8443.
-- Firewalls only require an outbound stateful filter rule allowing HTTPS from endpoint subnets to the coordinator.
-
-### B. Enterprise Proxies
-- Respects standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables automatically via Go's `http.ProxyFromEnvironment`.
-- Range-internal subnets (e.g. `10.0.0.0/8`, `*.range.local`) can be exempted via `NO_PROXY`.
-
-### C. Air-Gapped & Offline Networks
-- Zero external dependencies. All assets, web console logic, and synthetic corpora are bundled within the binary.
-- Requires no internet connectivity.
+- **`corpus/web_corpus.json`**: List of target domains, intranet portals, simulated search engines, and modern browser User-Agent strings.
+- **`corpus/user_creds.json`**: Synthetic enterprise accounts, department affiliations, email addresses, and security roles.
+- **`corpus/wordlist.txt`**: Dictionary of business and technical terminology used by the document authoring engine to generate realistic file names (e.g. `Q3_Financial_Review_Draft.docx`).
 
 ---
 
-## 5. Emulation Engines & Realism Calibration
+## 5. Network Topologies & Firewall Traversal
 
-### Blue Team Noise Calibration Matrix
-Adjust execution noise in persona YAML profiles to match training objectives:
+### 5.1 Single-Interface Edge Traversal (pfSense / OPNsense)
 
-| Noise Level | RPM | Dwell Time | Process Interval | Training Scenario |
-| :--- | :--- | :--- | :--- | :--- |
-| **Silent** | 0–1 | 60–120s | Disabled | Stealth evaluation; test if red team is noticed without any background cover |
-| **Low** | 2–5 | 20–60s | 60s | Baseline corporate office; modest background noise |
-| **Standard** | 5–15 | 10–30s | 15s | Standard enterprise workday; realistic SIEM alert volume |
-| **High** | 15–30 | 4–15s | 5s | High-stress environment; heavy noise masking offensive operations |
+RangeForge is uniquely suited for multi-tier cyber ranges partitioned by pfSense or OPNsense firewalls:
 
----
-
-## 6. Interactive Web UI Dashboard
-
-Access the operations console at: **`https://127.0.0.1:8443/`**
-
-### Features:
-- **Real-Time Telemetry**: Live SVG sparklines plotting Fleet Average CPU and RAM with 15-point historical smoothing.
-- **Fleet Roster**: 8-column host table displaying OS version, network IPs, assigned persona, and live telemetry.
-- **Interactive SVG Topology Map**: Visual representation of subnets, edge routers, and connected agents.
-- **Emulation Studio**: Live tuner for Web RPM, dwell jitter, SMB read/write ratios, and safe host processes.
-- **Host Inspector Modal**: Deep-dive inspection of CPU cores, memory usage, MAC address, MTU, and installed tools.
-- **Integrated Command Console**: Dispatch PowerShell or Bash commands to any endpoint directly from the browser.
-- **Dual Themes**: Toggle between **Ocean Sapphire** (cobalt deep blue cyber ops console) and **Carbon Black** (stealth dark operations with slate borders). Preferences persist in `localStorage`.
-
----
-
-## 7. Controller CLI & REST API Reference
-
-### Controller Commands
-```bash
-# List all active fleet endpoints
-rangeforge-ue controller agents --manager https://10.0.0.1:8443
-
-# Inspect host telemetry
-rangeforge-ue controller stats --manager https://10.0.0.1:8443 --agent <agent-id>
-
-# Dispatch remote command
-rangeforge-ue controller exec --manager https://10.0.0.1:8443 --agent <agent-id> --cmd "whoami /all"
-
-# Reassign persona live
-rangeforge-ue controller persona --manager https://10.0.0.1:8443 --agent <agent-id> --set-persona sysadmin
+```
+[ Workstations Subnet: 10.0.10.0/24 ]
+           │
+           │ Outbound HTTPS (Port 8443)
+           ▼
+┌─────────────────────────────────────────┐
+│     pfSense Firewall / Router Gateway   │
+│     WAN: 192.168.1.1  LAN: 10.0.10.1    │
+│     Rule: Allow LAN -> Manager:8443     │
+└────────────────────┬────────────────────┘
+                     │
+                     │ Outbound NAT / Routed
+                     ▼
+[ Central Management Subnet: 10.0.0.0/24 ]
+           │
+           ▼
+[ RangeForge Manager: 10.0.0.5:8443 ]
 ```
 
-### Core REST API Endpoints
-| Method | Path | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/v1/agent/register` | Endpoint agent registration |
-| `POST` | `/api/v1/agent/heartbeat` | Ingest periodic telemetry |
-| `GET` | `/api/v1/controller/agents` | Retrieve fleet inventory |
-| `GET` | `/api/v1/controller/telemetry` | Retrieve real-time CPU/RAM metrics |
-| `POST` | `/api/v1/controller/command` | Queue remote command for execution |
-| `POST` | `/api/v1/controller/persona` | Dynamically update assigned persona |
-| `GET` | `/api/v1/controller/topology` | Fetch current network topology |
-| `POST` | `/api/v1/auth/login` | Authenticate administrative operator |
+#### Firewall Rule Requirement:
+Only **one outbound rule** is required on the edge router:
+- **Action**: Pass
+- **Interface**: LAN
+- **Address Family**: IPv4
+- **Protocol**: TCP
+- **Source**: `LAN net` (or target subnet)
+- **Destination**: `Manager_IP` (Port `8443`)
+
+Because connections are stateful and outbound-only, no inbound port forwarding (NAT) or pinholes into the endpoint subnets are ever needed.
+
+### 5.2 Outbound-Only State Engine & NAT Boundaries
+
+When agents reside behind NAT gateways, their source IP address is translated. RangeForge automatically extracts both:
+1. **Reported Internal IP**: Collected directly from endpoint adapters via `net.Interfaces()`.
+2. **Observed Remote IP**: Extracted from the incoming TCP socket (`req.RemoteAddr`).
+Both addresses are stored in the Agent Registry and displayed in the Web UI Fleet Roster.
+
+### 5.3 Enterprise Proxies & PAC Configurations
+
+Host Agents automatically honor system proxy settings via standard environment variables:
+```bash
+export HTTP_PROXY="http://proxy.corp.local:8080"
+export HTTPS_PROXY="http://proxy.corp.local:8080"
+export NO_PROXY="localhost,127.0.0.1,10.0.0.0/8"
+```
+Range internal subnets can be exempted from proxy inspection by listing them in `NO_PROXY`.
+
+### 5.4 Air-Gapped & Isolated Range Operations
+
+RangeForge is completely self-contained:
+- Zero CDN dependencies: All JavaScript, CSS styling, and SVG assets are bundled directly inside the Go binary.
+- Requires no internet access or external package registries.
+- Can be deployed onto completely isolated, air-gapped networks via USB or offline disk image.
 
 ---
 
-## 8. Operational Security & Zero-Artifact Guarantees
+## 6. Emulation Engines & Behavioral Realism
 
-RangeForge is engineered with strict operational security guardrails:
+### 6.1 Web Browsing Engine
 
-1. **Zero Persistent Artifacts**: All temporary files created during emulation (drafts, locks, logs) are tracked in memory. When emulation halts or the agent process exits, all synthetic files are automatically deleted.
-2. **Stealth Command Execution**: Remote PowerShell commands on Windows are executed with `-NoProfile` and history suppression. Commands are never appended to user shell history files (`ConsoleHost_history.txt`).
-3. **Privilege-Free Operation**: Host Agents do not require `Administrator` or `root` privileges. They operate cleanly within standard unprivileged user security contexts.
+The web emulation engine generates human-like HTTP/HTTPS traffic:
+- **Poisson Dwell Times**: Dwell time between requests is randomized around the configured mean using a Poisson distribution.
+- **Modern User-Agents**: Rotates real-world browser headers:
+  - `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36`
+  - `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15`
+  - `Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0`
+- **Asset Waterfall**: Upon loading an HTML page, the engine parses asset tags (`<link rel="stylesheet">`, `<script src="...">`, `<img src="...">`) and issues parallel HTTP GET requests to simulate full page rendering.
+
+### 6.2 SMB / CIFS / NFS File Share Engine
+
+Generates authentic file server traffic:
+- Connects to designated network shares (or local test mounts).
+- Reads existing files according to `read_ratio`.
+- Periodically authors new office document drafts (`.docx`, `.xlsx`, `.txt`) using terms from `corpus/wordlist.txt`.
+- All written files are recorded in an in-memory tracking structure and deleted upon shutdown.
+
+### 6.3 Benign Host Activity & Safe Process Execution
+
+Executes realistic diagnostic and administrative tools without elevation:
+- **Windows**: Executes `whoami.exe`, `hostname.exe`, `netstat.exe -an`, `ipconfig.exe /all`, `systeminfo.exe`.
+- **Unix**: Executes `whoami`, `uname -a`, `netstat -tuln`, `df -h`, `uptime`, `git status`.
+- Execution cadences are staggered to avoid periodic spikes on host CPU and disk.
+
+### 6.4 Remote Command Execution Engine
+
+Enables cyber range operators to trigger ad-hoc activities on specific endpoints:
+- **Windows**: Executes via `powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -Command "<cmd>"`.
+- **History Suppression**: Execution bypasses `PSReadLine` history to avoid altering operator history logs.
+- **Output Capture**: Stdout, Stderr, exit code, and execution duration in milliseconds are returned directly to the Manager.
+
+### 6.5 Hardware & OS Telemetry Subsystem
+
+Collects low-overhead system metrics every heartbeat cycle:
+- **CPU Utilization**: Derived from CPU tick counters across all cores.
+- **Memory Consumption**: Total RAM, Available RAM, and percentage utilized.
+- **Disk Storage**: Free space and usage percentage of the system drive.
+- **Network Interface Counters**: Bytes sent and received per second.
+- **Installed Tools Inventory**: Discovers availability of CLI tools (`powershell`, `cmd`, `bash`, `ping`, `curl`, `git`, `netstat`, `nmap`).
 
 ---
 
-## 9. Troubleshooting & Frequently Asked Questions
+## 7. Detection Engineering & SIEM / EDR Noise Calibration
 
-### Q: Why do I see a TLS certificate warning in my browser?
-**A:** RangeForge generates a high-security self-signed certificate on first startup. Click **Advanced -> Proceed** in your browser, or install your organization's CA certificate into `certs/server.crt` and `certs/server.key`.
+### 7.1 Windows Event Log Telemetry Mapping
 
-### Q: Can I run RangeForge over plain HTTP?
-**A:** Yes. The unified listener multiplexes TLS and HTTP on the same port (8443). You can browse to `http://127.0.0.1:8443/` directly.
+RangeForge actions generate standard Windows Event Logs and Sysmon records, allowing blue teams to test correlation rules against authentic baseline noise:
 
-### Q: How do I add custom browsing URLs?
-**A:** Add target URLs to `configs/profiles/<persona>.yaml` under `target_urls`, or update `corpus/web_corpus.json`.
+| Emulation Action | Windows Security Event ID | Sysmon Event ID | Target Log Provider |
+| :--- | :--- | :--- | :--- |
+| Benign Process Execution (`whoami`, `hostname`) | `4688` (Process Creation) | `1` (Process Create) | `Microsoft-Windows-Sysmon/Operational` |
+| Web Browsing / HTTP GET Requests | — | `3` (Network Connection) | `Microsoft-Windows-Sysmon/Operational` |
+| Temporary Office Document Authoring | `4663` (File System Access) | `11` (File Create) | `Microsoft-Windows-Sysmon/Operational` |
+| Intranet Domain Resolution | — | `22` (DNS Query) | `Microsoft-Windows-Sysmon/Operational` |
+| SMB Share Connection (`net use`) | `5140` (Share Accessed) | `3` (Network Connection) | `Security` |
 
-### Q: How do I change the admin password?
-**A:** Click the **Admin** indicator in the Web UI navigation bar to open the **Change Credentials** dialog, or generate a new salted SHA-256 hash in `configs/admin_auth.json`.
+### 7.2 Linux Auditd & eBPF Event Generation
+
+On Linux endpoints, RangeForge generates standard system calls captured by `auditd`, `Falco`, or eBPF agents:
+- `execve` / `execveat`: Triggered during diagnostic command execution.
+- `connect` / `socket`: Triggered during web browsing and ping emulation.
+- `openat` / `write`: Triggered during file share operations and temporary document creation.
+
+### 7.3 Noise Density Matrix (Silent to Stress)
+
+Blue teams can tune the noise level to calibrate SIEM alerting thresholds:
+
+| Level | Intensity Multiplier | Web RPM | Dwell Jitter | Process Interval | Operational Objective |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Silent** | `0.0x` | 0 | None | Disabled | Pure stealth evaluation; verify if red team activity is spotted with zero background noise. |
+| **Low** | `0.5x` | 1–3 | 30–90s | 60s | Small office / branch environment; modest baseline noise. |
+| **Standard** | `1.0x` | 4–10 | 10–30s | 15s | Typical enterprise workday; authentic alert volume. |
+| **High** | `2.5x` | 15–30 | 5–15s | 5s | High-density trading floor or dev shop; heavy traffic masking attacks. |
+| **Stress** | `5.0x` | 30–60 | 1–5s | 2s | SOC stress test; evaluates SIEM pipeline throughput under load. |
+
+---
+
+## 8. Interactive Web Operations Console
+
+The built-in web operations console is served directly from the Manager on port 8443:
+
+### 8.1 Real-Time SVG Sparklines & Smoothing
+- Displays real-time Fleet Average CPU and RAM usage.
+- Uses 15-point historical smoothing to render clean, responsive SVG sparklines without client-side charting libraries.
+
+### 8.2 Fleet Roster & Host Inspector Modal
+- 8-column tabular view displaying Hostname, Operating System, Internal IP, External IP, Assigned Persona, Status, CPU %, and RAM %.
+- Clicking any host opens the **Host Inspector Modal**, revealing:
+  - Hardware specifications (Cores, Total RAM, Free Disk).
+  - Network details (MAC address, MTU, Subnet).
+  - Detected binary inventory (`git`, `ping`, `curl`, `powershell`, `bash`).
+  - Raw JSON telemetry payload.
+
+### 8.3 Interactive SVG Network Topology Visualizer
+- Renders an interactive network graph mapping active endpoints to their respective gateway routers and subnets based on `configs/topology.json`.
+
+### 8.4 Dual Cyber-Ops Theme System
+- **Ocean Sapphire**: Cobalt deep blue styling tailored for modern cyber operations centers.
+- **Carbon Black**: High-contrast slate and black theme designed for low-light control rooms.
+- User theme selection is preserved across browser sessions via `localStorage`.
+
+---
+
+## 9. Comprehensive REST API Reference
+
+The Manager exposes a full REST API for automation and integration with external cyber range orchestration frameworks:
+
+### 9.1 Authentication (`POST /api/v1/auth/login`)
+Authenticates an operator session and issues an HTTP cookie.
+
+```bash
+curl -k -X POST https://127.0.0.1:8443/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "rangeforge"}'
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "status": "success",
+  "message": "Authenticated successfully",
+  "username": "admin"
+}
+```
+
+---
+
+### 9.2 Agent Registration (`POST /api/v1/agent/register`)
+Invoked by host agents during startup.
+
+```bash
+curl -k -X POST https://127.0.0.1:8443/api/v1/agent/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hostname": "win11-finance-01",
+    "os": "windows",
+    "arch": "amd64",
+    "ips": ["10.0.10.45"],
+    "mac": "00:50:56:B2:1A:09",
+    "tags": ["workstation", "finance"],
+    "persona": "office_worker",
+    "tools": ["ping", "whoami", "powershell", "netstat"]
+  }'
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "status": "registered",
+  "agent_id": "agent-win11-finance-01-9a4f",
+  "heartbeat_interval_sec": 5,
+  "assigned_persona": "office_worker"
+}
+```
+
+---
+
+### 9.3 Ingest Telemetry Heartbeat (`POST /api/v1/agent/heartbeat`)
+Transmits periodic hardware and network metrics.
+
+```bash
+curl -k -X POST https://127.0.0.1:8443/api/v1/agent/heartbeat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "agent-win11-finance-01-9a4f",
+    "cpu_pct": 14.2,
+    "ram_pct": 42.8,
+    "disk_pct": 58.1,
+    "net_bytes_sent": 1420500,
+    "net_bytes_recv": 8940200,
+    "status": "active"
+  }'
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "status": "acknowledged",
+  "pending_commands": [],
+  "persona_update": null
+}
+```
+
+---
+
+### 9.4 List Fleet Endpoints (`GET /api/v1/controller/agents`)
+Returns complete inventory of active and offline endpoints.
+
+```bash
+curl -k -X GET https://127.0.0.1:8443/api/v1/controller/agents
+```
+
+**Response (HTTP 200 OK):**
+```json
+[
+  {
+    "agent_id": "agent-win11-finance-01-9a4f",
+    "hostname": "win11-finance-01",
+    "os": "windows",
+    "arch": "amd64",
+    "ips": ["10.0.10.45"],
+    "persona": "office_worker",
+    "status": "online",
+    "last_seen_sec": 2,
+    "cpu_pct": 14.2,
+    "ram_pct": 42.8
+  }
+]
+```
+
+---
+
+### 9.5 Dispatch Remote Command (`POST /api/v1/controller/command`)
+Queues an administrative command for execution on a specific agent.
+
+```bash
+curl -k -X POST https://127.0.0.1:8443/api/v1/controller/command \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "agent-win11-finance-01-9a4f",
+    "command": "whoami /all"
+  }'
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "task_id": "task-78192a",
+  "status": "queued",
+  "agent_id": "agent-win11-finance-01-9a4f"
+}
+```
+
+---
+
+### 9.6 Live Persona Reassignment (`POST /api/v1/controller/persona`)
+Transitions an endpoint to a new persona without restarting the agent process.
+
+```bash
+curl -k -X POST https://127.0.0.1:8443/api/v1/controller/persona \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "agent-win11-finance-01-9a4f",
+    "persona": "sysadmin"
+  }'
+```
+
+**Response (HTTP 200 OK):**
+```json
+{
+  "status": "success",
+  "agent_id": "agent-win11-finance-01-9a4f",
+  "new_persona": "sysadmin"
+}
+```
+
+---
+
+## 10. Operational Security & Anti-Forensics Guarantees
+
+RangeForge is built for responsible, non-destructive simulation:
+1. **Automated Ephemeral Cleanup**: Every synthetic file created on local disks or SMB shares is tracked in memory. Upon agent shutdown (or receiving a termination signal), all created files are unlinked.
+2. **Shell History Suppression**: Commands executed via the remote command dispatcher use PowerShell `-NoProfile` and avoid altering the user's `ConsoleHost_history.txt` or bash history.
+3. **Unprivileged Execution**: Agents never require root or Administrator privileges. They execute within standard user security contexts.
+
+---
+
+## 11. Troubleshooting & Operator Diagnostics Runbook
+
+### Scenario 1: Browser Displays TLS Certificate Warning
+- **Symptom**: Browser warns that the connection is not private (`NET::ERR_CERT_AUTHORITY_INVALID`).
+- **Root Cause**: RangeForge auto-generates a self-signed X.509 certificate on initial launch.
+- **Remediation**: Click **Advanced -> Proceed to 127.0.0.1 (unsafe)**, or navigate directly to plaintext HTTP: `http://127.0.0.1:8443/`. Alternatively, install your organization's internal CA certificate into `certs/server.crt` and `certs/server.key`.
+
+### Scenario 2: Host Agent Cannot Reach Manager
+- **Symptom**: Agent logs `[ERROR] Failed to connect to manager: dial tcp 10.0.0.1:8443: connectex: A connection attempt failed`.
+- **Root Cause**: Firewall blocking port 8443 or Manager service is not listening.
+- **Remediation**:
+  1. Verify Manager is running: `curl -k https://<manager-ip>:8443/api/v1/controller/agents`.
+  2. Verify firewall allows outbound TCP port 8443 from agent subnet.
+  3. Ensure Manager was started with `--host 0.0.0.0` rather than `127.0.0.1`.
+
+### Scenario 3: Agents Show Status 'Offline' in Web UI
+- **Symptom**: Agent displays as offline after 30 seconds.
+- **Root Cause**: Agent process terminated or heartbeat packets are being dropped by an intermediate router.
+- **Remediation**: Inspect agent terminal output for errors. Verify whether network jitter exceeds `heartbeat_timeout_sec` in `configs/manager.yaml`.
+
+### Scenario 4: Command Execution Returns Access Denied
+- **Symptom**: Remote command runner fails with permission denied.
+- **Root Cause**: Command attempted an administrative operation requiring elevation.
+- **Remediation**: RangeForge agents intentionally run as unprivileged users. Ensure commands target non-elevated diagnostics (e.g. `ipconfig`, `whoami`, `netstat`).
